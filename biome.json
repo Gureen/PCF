@@ -7,9 +7,11 @@
   "organizeImports": {
     "enabled": true
   },
-  "formatter": {
-    "indentStyle": "space"
-  },
+"formatter": {
+  "enabled": true,
+  "indentStyle": "space",
+  "indentWidth": 2
+},
   "linter": {
     "enabled": true,
     "rules": {
@@ -42,17 +44,8 @@
         "useBlockStatements": "error",
         "useCollapsedElseIf": "error",
         "useDefaultSwitchClause": "error",
-        "useConsistentArrayType": {
-          "level": "error",
-          "options": {
-            "syntax": "generic"
-          }
-        },
         "useFilenamingConvention": {
-          "level": "error",
-          "options": {
-            "filenameCases": ["kebab-case"]
-          }
+          "level": "error"
         }
       },
       "suspicious": {

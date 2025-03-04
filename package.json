@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=22.13.x",
+    "node": ">=23.x.x",
     "pnpm": ">=9"
   },
   "packageManager": "pnpm@9.13.2",
@@ -32,20 +32,20 @@
   "dependencies": {
     "@commitlint/cli": "^19.7.1",
     "@commitlint/types": "^19.5.0",
-    "@fontsource-variable/plus-jakarta-sans": "^5.2.5",
+    "@radix-ui/react-slot": "^1.1.2",
     "@react-router/node": "^7.2.0",
     "@tailwindcss/vite": "^4.0.9",
-    "@theme-toggles/react": "^4.1.0",
+    "@xyflow/react": "^12.4.4",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "isbot": "^5.1.23",
+    "isbot": "^5",
     "lucide-react": "^0.477.0",
-    "next-themes": "^0.4.4",
     "pnpm": "^10.5.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-helmet-async": "^2.0.5",
     "react-router": "^7.2.0",
-    "tailwind-merge": "^3.0.2"
+    "tailwind-merge": "^3.0.2",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
@@ -57,7 +57,6 @@
     "@types/react-dom": "^19.0.4",
     "@vitest/coverage-v8": "^3.0.7",
     "@vitest/ui": "^3.0.7",
-    "commit-and-tag-version": "^12.5.0",
     "cross-env": "^7.0.3",
     "husky": "^9.1.7",
     "knip": "^5.45.0",

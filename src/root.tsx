@@ -1,4 +1,3 @@
-import { HelmetProvider } from 'react-helmet-async';
 import {
   Links,
   Meta,
@@ -8,28 +7,23 @@ import {
   isRouteErrorResponse,
 } from 'react-router';
 
-import { Layout as AppLayout } from '@/lib/layout';
 import type { Route } from './+types/root';
 
 // fonts
-import '@fontsource-variable/plus-jakarta-sans';
 import '@/lib/styles/globals.css';
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function Layout() {
   return (
     <html lang="en">
       <head>
         <meta charSet="UTF-8" />
         <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>vite-react-tailwind-starter</title>
+        <title>PFC</title>
         <Meta />
         <Links />
       </head>
       <body>
-        <HelmetProvider>
-          <AppLayout>{children}</AppLayout>
-        </HelmetProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
