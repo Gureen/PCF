@@ -1,14 +1,5 @@
-import type { BuiltInNode, Node, NodeTypes } from '@xyflow/react';
-import { PositionLoggerNode } from './PositionLoggerNode';
-
-export type PositionLoggerNodeData = Node<
-  {
-    label?: string;
-  },
-  'position-logger'
->;
-
-export type AppNode = BuiltInNode | PositionLoggerNodeData;
+import type { Edge } from '@xyflow/react';
+import type { AppNode } from './types';
 
 export const initialNodes: AppNode[] = [
   {
@@ -32,6 +23,8 @@ export const initialNodes: AppNode[] = [
   },
 ];
 
-export const nodeTypes = {
-  'position-logger': PositionLoggerNode,
-} satisfies NodeTypes;
+export const initialEdges = [
+  { id: 'a->b', source: 'a', target: 'b', animated: true },
+  { id: 'b->c', source: 'b', target: 'c', animated: true },
+  { id: 'c->d', source: 'c', target: 'd', animated: true },
+] satisfies Edge[];

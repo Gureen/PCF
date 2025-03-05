@@ -1,0 +1,23 @@
+.title-section {
+  margin-bottom: 8px;
+}
+
+.empty-activity {
+  min-height: 128px;
+}
+
+.empty-description {
+  color: #faad14;
+}
+
+.edit-button {
+  margin-right: 8px;
+}
+
+.description {
+  margin: 0 0 8px;
+}
+
+.tag-section {
+  margin-bottom: 8px;
+}

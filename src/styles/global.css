@@ -1,7 +1,8 @@
 html, 
 body {
     background-color: #F8F8F8;
-    margin: 0;
-    padding: 0;
-    min-height: 100%;
+    overflow-x: hidden; 
+    box-sizing: border-box;
+    margin-inline: 16px;
 }
+
