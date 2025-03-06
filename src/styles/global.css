@@ -1,8 +1,5 @@
-html, 
-body {
+html, body {
     background-color: #F8F8F8;
-    overflow-x: hidden; 
-    box-sizing: border-box;
-    margin-inline: 16px;
-}
-
+    margin-inline: 20px;
+  }
+  

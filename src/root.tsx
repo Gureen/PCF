@@ -1,11 +1,5 @@
-import {
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-  isRouteErrorResponse,
-} from 'react-router';
+import { Meta, Outlet, Scripts, isRouteErrorResponse } from 'react-router';
+import './styles/global.css';
 
 import type { Route } from './+types/root';
 
@@ -18,12 +12,13 @@ export function Layout() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>PFC</title>
         <Meta />
-        <Links />
       </head>
       <body>
-        <ScrollRestoration />
         <Scripts />
-        <Outlet />
+        {/* Wrap the Outlet in a div with our content-container class */}
+        <div className="content-container">
+          <Outlet />
+        </div>
       </body>
     </html>
   );
@@ -51,7 +46,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
+    <main className="pt-16 p-4 container mx-auto content-container">
       <h1>{message}</h1>
       <p>{details}</p>
       {stack && (

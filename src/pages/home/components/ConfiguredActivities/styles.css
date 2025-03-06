@@ -2,8 +2,12 @@
   margin-bottom: 8px;
 }
 
-.empty-activity {
-  min-height: 128px;
+.activity-card {
+  min-height: 195px;
+}
+
+.empty-card {
+  min-height: 81px;
 }
 
 .empty-description {

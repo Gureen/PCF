@@ -1,3 +1,4 @@
+// Updated Home component (index.tsx)
 import '@xyflow/react/dist/style.css';
 import { Col, Row } from 'antd';
 import { ActionButtons } from './components/ActionButtons';
@@ -8,12 +9,12 @@ import { VisualProcessFlow } from './components/VisualProcessFlow';
 
 const Home = () => {
   return (
-    <Row gutter={24}>
-      <Col span={10}>
+    <Row gutter={[16, 16]}>
+      <Col xs={24} lg={10}>
         <ProcessFlowForm />
         <ProcesFlowTable />
       </Col>
-      <Col span={14}>
+      <Col xs={24} lg={14}>
         <ConfiguredActivites />
         <VisualProcessFlow />
         <ActionButtons />
@@ -22,4 +23,5 @@ const Home = () => {
   );
 };
 
+// biome-ignore lint/style/noDefaultExport: Pages are allowed due to routes.ts setup
 export default Home;

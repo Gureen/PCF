@@ -40,7 +40,8 @@ export const ProcessFlowFormText = {
       ],
     },
     BUTTON: {
-      TEXT: 'Add Activity',
+      ADD_ACITIVTY: 'Add',
+      RESET_FORM: 'Reset',
     },
   },
 };

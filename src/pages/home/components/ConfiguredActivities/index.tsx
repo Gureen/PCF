@@ -1,16 +1,14 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Card, Empty, List, Typography } from 'antd';
-import { useState } from 'react';
 import { ACTIVITY_TEXT, GRID_CONFIG, MAX_ACTIVITIES } from './constants';
-import { mockActivities } from './mocks';
-import type { ActivityType } from './types';
 import './styles.css';
+import { useProcessFlow } from '@/context';
 import { TagSection } from '../TagSection';
 
 const { Title } = Typography;
 
 export const ConfiguredActivites = () => {
-  const [activities, _] = useState<ActivityType[]>(mockActivities);
+  const { activities, editActivity, deleteActivity } = useProcessFlow();
 
   const createEmptyActivity = (index: number) => ({
     id: `empty-${index}`,
@@ -22,9 +20,12 @@ export const ConfiguredActivites = () => {
     (_, index) => activities[index] || createEmptyActivity(index),
   );
 
+  const handleEditActivity = (id: string) => {
+    editActivity(id);
+  };
+
   const handleDeleteActivity = (id: string) => {
-    // biome-ignore lint/suspicious/noConsoleLog: <explanation>
-    console.log(`Delete activity with id: ${id}`);
+    deleteActivity(id);
   };
 
   return (
@@ -39,25 +40,29 @@ export const ConfiguredActivites = () => {
         renderItem={(item) => (
           <List.Item>
             {item.isEmpty ? (
-              <Empty
-                className="empty-activity"
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description={
-                  <Typography.Text className="empty-description">
-                    {ACTIVITY_TEXT.EMPTY_DESCRIPTION}
-                  </Typography.Text>
-                }
-              />
+              <Card>
+                <Empty
+                  className="empty-card"
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description={
+                    <Typography.Text className="empty-description">
+                      {ACTIVITY_TEXT.EMPTY_DESCRIPTION}
+                    </Typography.Text>
+                  }
+                />
+              </Card>
             ) : (
               <Card
                 title={item.activityName}
                 size="small"
+                className="activity-card"
                 extra={
                   <div>
                     <Button
                       icon={<EditOutlined />}
                       type="text"
                       className="edit-button"
+                      onClick={() => handleEditActivity(item.id)}
                     />
                     <Button
                       icon={<DeleteOutlined />}
@@ -68,8 +73,12 @@ export const ConfiguredActivites = () => {
                   </div>
                 }
               >
-                <p className="description">{item.description}</p>
-
+                {item.description && (
+                  <p className="description">
+                    <strong>{ACTIVITY_TEXT.DESCRIPTION} </strong>
+                    {item.description}
+                  </p>
+                )}
                 <TagSection
                   items={item.inputs}
                   label={ACTIVITY_TEXT.INPUTS_LABEL}

@@ -64,6 +64,7 @@ export const ProcesFlowTable = () => {
           dataSource={filteredData}
           pagination={paginationConfig}
           className="dark-header-table"
+          size="small"
         >
           <Table.Column
             title={PROCESS_FLOW_TEXT.COLUMN.PROJECT_NAME}

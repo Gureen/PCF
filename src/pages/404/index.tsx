@@ -24,4 +24,5 @@ const Page404 = () => {
   );
 };
 
+// biome-ignore lint/style/noDefaultExport: Pages are allowed due to routes.ts setup
 export default Page404;
