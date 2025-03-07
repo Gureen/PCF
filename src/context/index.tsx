@@ -44,6 +44,7 @@ interface ProcessFlowContextType {
   deleteFlow: (flowId: string) => boolean;
   setCurrentFlowName: React.Dispatch<React.SetStateAction<string>>;
   importFlow: (flow: SavedFlow) => { isNew: boolean; isUpdated: boolean };
+  setCurrentFlowId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 interface ProcessFlowProviderProps {
@@ -134,7 +135,6 @@ export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
 
   const clearActivities = () => {
     setActivities([]);
-    setCurrentFlowName('');
     setOriginalActivities([]);
     setHasChanges(false);
   };
@@ -341,6 +341,7 @@ export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
         clearActivities,
         deleteFlow,
         setCurrentFlowName,
+        setCurrentFlowId,
         importFlow,
       }}
     >

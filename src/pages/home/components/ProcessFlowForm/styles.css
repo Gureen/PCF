@@ -6,3 +6,19 @@
     color: #1890ff;
     margin-left: 8px;
 }
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .title-section {
+    flex-grow: 1;
+  }
+  
+  .action-buttons-section {
+    display: flex;
+    justify-content: flex-end;
+  }

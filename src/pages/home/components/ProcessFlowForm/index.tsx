@@ -24,6 +24,7 @@ import { ProcessFlowFormText } from './constants';
 import type { FieldType } from './types';
 import './styles.css';
 import { type Activity, useProcessFlow } from '@/context';
+import { ActionButtons } from '../ActionButtons';
 import { inputOptions, outputOptions } from '../ConfiguredActivities/constants';
 
 const { Title } = Typography;
@@ -43,12 +44,11 @@ export interface FormValues {
   assignedUsers?: string[];
 }
 
-
 interface ProcessFlowFormProps {
   form: FormInstance<FormValues>;
 }
 
-export const ProcessFlowForm = ({form}:ProcessFlowFormProps) => {
+export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
   const [projectFlowName, setProjectFlowName] = useState('');
   const {
     addActivity,
@@ -61,28 +61,22 @@ export const ProcessFlowForm = ({form}:ProcessFlowFormProps) => {
 
   useEffect(() => {
     if (isEditing && currentActivity) {
-      const colorValue = currentActivity.color ? currentActivity.color : DEFAULT_COLOR;
-      
+      const colorValue = currentActivity.color
+        ? currentActivity.color
+        : DEFAULT_COLOR;
+
       form.setFieldsValue({
         ...currentActivity,
-        color: colorValue
+        color: colorValue,
       });
     } else {
       form.resetFields();
-      form.setFieldsValue({ 
+      form.setFieldsValue({
         color: DEFAULT_COLOR,
-        projectFlowName: currentFlowName 
+        projectFlowName: currentFlowName,
       });
     }
   }, [currentActivity, isEditing, form, currentFlowName]);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    if (currentFlowName) {
-      form.setFieldValue('projectFlowName', currentFlowName);
-      setProjectFlowName(currentFlowName);
-    }
-  }, [currentFlowName, form]);
 
   // Extract color handling logic
   const getColorValue = (colorInput: ColorType): string => {
@@ -90,17 +84,17 @@ export const ProcessFlowForm = ({form}:ProcessFlowFormProps) => {
     if (!colorInput) {
       return DEFAULT_COLOR;
     }
-  
+
     // If it's already a string (which it should be with format="hex"), return it
     if (typeof colorInput === 'string') {
       return colorInput;
     }
-  
+
     // If it's an object (shouldn't happen with format="hex" but just in case)
     if (typeof colorInput === 'object' && colorInput.toHexString) {
       return colorInput.toHexString();
     }
-  
+
     // For any other case, return default
     return DEFAULT_COLOR;
   };
@@ -141,16 +135,23 @@ export const ProcessFlowForm = ({form}:ProcessFlowFormProps) => {
 
   return (
     <div className="process-flow-container">
-      <Title level={3}>{ProcessFlowFormText.MAIN_TITLE}</Title>
+      <div className="header-container">
+        <div className="title-section">
+          <Title level={3}>{ProcessFlowFormText.MAIN_TITLE}</Title>
+        </div>
+        <div className="action-buttons-section">
+          <ActionButtons form={form} />
+        </div>
+      </div>
       <Form
         form={form}
         name="processFlowForm"
         layout="vertical"
         onFinish={onFinish}
         autoComplete="off"
-        initialValues={{ 
+        initialValues={{
           projectFlowName,
-          color: DEFAULT_COLOR // Add default color to initial values
+          color: DEFAULT_COLOR, // Add default color to initial values
         }}
       >
         <Form.Item<FieldType>
@@ -238,13 +239,8 @@ export const ProcessFlowForm = ({form}:ProcessFlowFormProps) => {
               <Form.Item<FieldType>
                 label={ProcessFlowFormText.ACTIVITIES.COLOR.LABEL}
                 name="color"
-                initialValue={DEFAULT_COLOR}
               >
-                <ColorPicker 
-                  size="middle" 
-                  defaultValue={DEFAULT_COLOR} 
-                  format="hex"
-                />
+                <ColorPicker size="middle" format="hex" />
               </Form.Item>
             </Col>
           </Row>
