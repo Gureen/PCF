@@ -1,7 +1,7 @@
 export const ProcessFlowFormText = {
   MAIN_TITLE: 'Process flow configurator',
   PROJECT_FLOW: {
-    LABEL: 'Project Flow Name',
+    LABEL: 'Project flow name',
     PLACEHOLDER: 'Enter process flow name',
     ERROR_MESSAGE: 'Please input project flow name!',
   },

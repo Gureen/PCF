@@ -11,6 +11,7 @@ import {
   Col,
   ColorPicker,
   Form,
+  type FormInstance,
   Input,
   Row,
   Select,
@@ -28,20 +29,26 @@ import { inputOptions, outputOptions } from '../ConfiguredActivities/constants';
 const { Title } = Typography;
 const { TextArea } = Input;
 
-interface FormValues {
+// Default color to use when none is specified
+const DEFAULT_COLOR = '#1890ff';
+
+type ColorType = string | { toHexString?: () => string } | null | undefined;
+export interface FormValues {
   projectFlowName?: string;
   activityName?: string;
   description?: string;
   inputs?: string[];
   outputs?: string[];
-  color?: {
-    toHexString: () => string;
-  };
+  color?: ColorType; //
   assignedUsers?: string[];
 }
 
-export const ProcessFlowForm = () => {
-  const [form] = Form.useForm();
+
+interface ProcessFlowFormProps {
+  form: FormInstance<FormValues>;
+}
+
+export const ProcessFlowForm = ({form}:ProcessFlowFormProps) => {
   const [projectFlowName, setProjectFlowName] = useState('');
   const {
     addActivity,
@@ -49,36 +56,53 @@ export const ProcessFlowForm = () => {
     isEditing,
     updateActivity,
     cancelEditing,
+    currentFlowName,
   } = useProcessFlow();
 
   useEffect(() => {
     if (isEditing && currentActivity) {
-      const formValues = { ...currentActivity };
-      form.setFieldsValue(formValues);
+      const colorValue = currentActivity.color ? currentActivity.color : DEFAULT_COLOR;
+      
+      form.setFieldsValue({
+        ...currentActivity,
+        color: colorValue
+      });
     } else {
       form.resetFields();
+      form.setFieldsValue({ 
+        color: DEFAULT_COLOR,
+        projectFlowName: currentFlowName 
+      });
     }
-  }, [currentActivity, isEditing, form]);
+  }, [currentActivity, isEditing, form, currentFlowName]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    if (currentFlowName) {
+      form.setFieldValue('projectFlowName', currentFlowName);
+      setProjectFlowName(currentFlowName);
+    }
+  }, [currentFlowName, form]);
 
   // Extract color handling logic
-  const getColorValue = (
-    colorInput: string | { toHexString: () => string } | null,
-  ): string => {
-    const defaultColor = '#1890ff';
-
+  const getColorValue = (colorInput: ColorType): string => {
+    // If no color input, return default
     if (!colorInput) {
-      return defaultColor;
+      return DEFAULT_COLOR;
     }
-
+  
+    // If it's already a string (which it should be with format="hex"), return it
     if (typeof colorInput === 'string') {
       return colorInput;
     }
-
+  
+    // If it's an object (shouldn't happen with format="hex" but just in case)
     if (typeof colorInput === 'object' && colorInput.toHexString) {
       return colorInput.toHexString();
     }
-
-    return defaultColor;
+  
+    // For any other case, return default
+    return DEFAULT_COLOR;
   };
 
   const createActivityObject = (
@@ -95,7 +119,7 @@ export const ProcessFlowForm = () => {
       description: values.description,
       inputs: values.inputs || [],
       outputs: values.outputs || [],
-      color: getColorValue(values.color ?? null),
+      color: getColorValue(values.color),
       assignedUsers: values.assignedUsers || [],
     };
   };
@@ -124,11 +148,17 @@ export const ProcessFlowForm = () => {
         layout="vertical"
         onFinish={onFinish}
         autoComplete="off"
-        initialValues={{ projectFlowName }}
+        initialValues={{ 
+          projectFlowName,
+          color: DEFAULT_COLOR // Add default color to initial values
+        }}
       >
         <Form.Item<FieldType>
           label={ProcessFlowFormText.PROJECT_FLOW.LABEL}
           name="projectFlowName"
+          rules={[
+            { required: true, message: 'Please enter project flow name' },
+          ]}
         >
           <Input
             placeholder={ProcessFlowFormText.PROJECT_FLOW.PLACEHOLDER}
@@ -208,8 +238,13 @@ export const ProcessFlowForm = () => {
               <Form.Item<FieldType>
                 label={ProcessFlowFormText.ACTIVITIES.COLOR.LABEL}
                 name="color"
+                initialValue={DEFAULT_COLOR}
               >
-                <ColorPicker size="middle" />
+                <ColorPicker 
+                  size="middle" 
+                  defaultValue={DEFAULT_COLOR} 
+                  format="hex"
+                />
               </Form.Item>
             </Col>
           </Row>

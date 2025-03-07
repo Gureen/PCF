@@ -1,3 +1,5 @@
+import type { SavedFlow } from '@/context';
+import { useProcessFlow } from '@/context';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -5,25 +7,32 @@ import {
   InfoCircleOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
-import { Button, Divider, Input, Space, Table, Tooltip } from 'antd';
+import { Button, Divider, Input, Popconfirm, Space, Table, Tooltip } from 'antd';
 import { useEffect, useState } from 'react';
 import { PROCESS_FLOW_TEXT } from './constants';
-import { preloadedFlows } from './mocks';
-import type { SavedFlowType } from './types';
 import './styles.css';
 
-export const ProcesFlowTable = () => {
-  const [savedFlows, _] = useState<SavedFlowType[]>(preloadedFlows);
+export const ProcessFlowTable = () => {
+  const { 
+    savedFlows, 
+    loadFlow, 
+    deleteFlow,
+    preloadedFlowsData,
+  } = useProcessFlow();
+  
   const [searchText, setSearchText] = useState('');
-  const [filteredData, setFilteredData] = useState<SavedFlowType[]>(savedFlows);
+  const [filteredData, setFilteredData] = useState<SavedFlow[]>([]);
+  
+  // Combine all flows for display
+  const combinedFlows = [...preloadedFlowsData, ...savedFlows];
 
-  const filterFlows = (flows: SavedFlowType[], query: string) => {
+  const filterFlows = (flows: SavedFlow[], query: string) => {
     return flows.filter((flow) =>
       flow.projectName.toLowerCase().includes(query.toLowerCase()),
     );
   };
 
-  const updateFilteredFlows = (flows: SavedFlowType[], query: string) => {
+  const updateFilteredFlows = (flows: SavedFlow[], query: string) => {
     const filtered = filterFlows(flows, query);
     setFilteredData(filtered);
   };
@@ -33,11 +42,20 @@ export const ProcesFlowTable = () => {
     showSizeChanger: false,
     showTotal: PROCESS_FLOW_TEXT.PAGINATION_TOTAL,
   };
+  
+  const handleLoadFlow = (flowId: string) => {
+    loadFlow(flowId);
+  };
+  
+  const handleDeleteFlow = (record: SavedFlow) => {
+    // Delete all types of flows through context
+    deleteFlow(record.id);
+  };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    updateFilteredFlows(savedFlows, searchText);
-  }, [searchText, savedFlows]);
+    updateFilteredFlows(combinedFlows, searchText);
+  }, [searchText, savedFlows, preloadedFlowsData]);
 
   return (
     <>
@@ -60,11 +78,12 @@ export const ProcesFlowTable = () => {
           className="search-input"
         />
 
-        <Table<SavedFlowType>
+        <Table
           dataSource={filteredData}
           pagination={paginationConfig}
           className="dark-header-table"
           size="small"
+          rowKey={(record) => record.id}
         >
           <Table.Column
             title={PROCESS_FLOW_TEXT.COLUMN.PROJECT_NAME}
@@ -90,19 +109,37 @@ export const ProcesFlowTable = () => {
             title={PROCESS_FLOW_TEXT.COLUMN.ACTIONS}
             key="actions"
             width={150}
-            render={(_, __) => (
-              <Space size="small">
-                <Tooltip title={PROCESS_FLOW_TEXT.ACTION.LOAD}>
-                  <Button type="text" icon={<EditOutlined />} />
-                </Tooltip>
-                <Tooltip title={PROCESS_FLOW_TEXT.ACTION.EXPORT}>
-                  <Button type="text" icon={<ExportOutlined />} />
-                </Tooltip>
-                <Tooltip title={PROCESS_FLOW_TEXT.ACTION.DELETE}>
-                  <Button type="text" danger icon={<DeleteOutlined />} />
-                </Tooltip>
-              </Space>
-            )}
+            render={(_, record: SavedFlow) => {              
+              return (
+                <Space size="small">
+                  <Tooltip title={PROCESS_FLOW_TEXT.ACTION.LOAD}>
+                    <Button 
+                      type="text" 
+                      icon={<EditOutlined />} 
+                      onClick={() => handleLoadFlow(record.id)}
+                    />
+                  </Tooltip>
+                  <Tooltip title={PROCESS_FLOW_TEXT.ACTION.EXPORT}>
+                    <Button type="text" icon={<ExportOutlined />} />
+                  </Tooltip>
+                  <Tooltip title={PROCESS_FLOW_TEXT.ACTION.DELETE}>
+                    <Popconfirm
+                      title="Delete this process flow?"
+                      description="Are you sure you want to delete this process flow?"
+                      onConfirm={() => handleDeleteFlow(record)}
+                      okText="Yes"
+                      cancelText="No"
+                    >
+                      <Button 
+                        type="text" 
+                        danger 
+                        icon={<DeleteOutlined style={{ color: '#ff4d4f' }} />}
+                      />
+                    </Popconfirm>
+                  </Tooltip>
+                </Space>
+              );
+            }}
           />
         </Table>
       </Space>
