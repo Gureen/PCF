@@ -1,4 +1,5 @@
 import {
+  AppstoreOutlined,
   CloseOutlined,
   InfoCircleOutlined,
   PlusOutlined,
@@ -10,16 +11,20 @@ import {
   Card,
   Col,
   ColorPicker,
+  Divider,
+  Drawer,
   Form,
   type FormInstance,
   Input,
   Row,
   Select,
   Space,
+  Tag,
   Tooltip,
   Typography,
+  message,
 } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ProcessFlowFormText } from './constants';
 import type { FieldType } from './types';
 import './styles.css';
@@ -27,11 +32,51 @@ import { type Activity, useProcessFlow } from '@/context';
 import { ActionButtons } from '../ActionButtons';
 import { inputOptions, outputOptions } from '../ConfiguredActivities/constants';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 const { TextArea } = Input;
 
 // Default color to use when none is specified
 const DEFAULT_COLOR = '#1890ff';
+
+// Predefined template activities
+const activityTemplates: Activity[] = [
+  {
+    id: 'template-1',
+    activityName: 'Content Creation',
+    description: 'Creating original content for the project',
+    inputs: ['Brief', 'Research'],
+    outputs: ['Draft Content', 'Assets'],
+    color: '#1677ff',
+    assignedUsers: ['John Doe'],
+  },
+  {
+    id: 'template-2',
+    activityName: 'Review Process',
+    description: 'Reviewing and approving content',
+    inputs: ['Draft Content'],
+    outputs: ['Approved Content', 'Revision Notes'],
+    color: '#52c41a',
+    assignedUsers: ['Jane Smith', 'Alex Johnson'],
+  },
+  {
+    id: 'template-3',
+    activityName: 'Client Approval',
+    description: 'Getting final client sign-off',
+    inputs: ['Approved Content'],
+    outputs: ['Final Content', 'Client Feedback'],
+    color: '#fa8c16',
+    assignedUsers: ['Jane Smith'],
+  },
+  {
+    id: 'template-4',
+    activityName: 'Production',
+    description: 'Finalizing content for deployment',
+    inputs: ['Final Content'],
+    outputs: ['Production Ready Assets'],
+    color: '#722ed1',
+    assignedUsers: ['Bob Wilson'],
+  },
+];
 
 type ColorType = string | { toHexString?: () => string } | null | undefined;
 export interface FormValues {
@@ -40,7 +85,7 @@ export interface FormValues {
   description?: string;
   inputs?: string[];
   outputs?: string[];
-  color?: ColorType; //
+  color?: ColorType;
   assignedUsers?: string[];
 }
 
@@ -58,6 +103,12 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
     cancelEditing,
     currentFlowName,
   } = useProcessFlow();
+
+  const [messageApi, contextHolder] = message.useMessage();
+  const formCardRef = useRef<HTMLDivElement>(null);
+
+  // Drawer state
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     if (isEditing && currentActivity) {
@@ -133,8 +184,138 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
     }
   };
 
+  // Handle template drops
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (formCardRef.current) {
+      formCardRef.current.classList.add('dragging-over');
+    }
+  };
+
+  const handleDragLeave = () => {
+    if (formCardRef.current) {
+      formCardRef.current.classList.remove('dragging-over');
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+
+    // Reset styling
+    if (formCardRef.current) {
+      formCardRef.current.classList.remove('dragging-over');
+    }
+
+    try {
+      // Get the template data
+      const templateData = JSON.parse(
+        e.dataTransfer.getData('application/json'),
+      );
+
+      // If we're editing, ask user for confirmation before overwriting
+      if (isEditing) {
+        const proceed = window.confirm(
+          'You are currently editing an activity. Do you want to replace your current changes with this template?',
+        );
+        if (!proceed) {
+          return;
+        }
+      }
+
+      // Set the form values based on the template
+      form.setFieldsValue({
+        activityName: templateData.activityName,
+        description: templateData.description,
+        color: templateData.color,
+        inputs: templateData.inputs,
+        outputs: templateData.outputs,
+        assignedUsers: templateData.assignedUsers,
+      });
+
+      messageApi.success(
+        `Template "${templateData.activityName}" loaded into form`,
+      );
+    } catch (error) {
+      console.error('Error parsing dropped template:', error);
+      messageApi.error('Could not load the template. Please try again.');
+    }
+  };
+
+  // Handle drawer
+  const showDrawer = () => {
+    setDrawerOpen(true);
+  };
+
+  const closeDrawer = () => {
+    setDrawerOpen(false);
+  };
+
+  // Handle drag start for the template items
+  const handleDragStart = (
+    e: React.DragEvent<HTMLDivElement>,
+    template: Activity,
+  ) => {
+    e.dataTransfer.setData('application/json', JSON.stringify(template));
+    e.dataTransfer.effectAllowed = 'copy';
+  };
+
+  const renderTemplateCard = (template: Activity) => (
+    <Card
+      key={template.id}
+      style={{ marginBottom: 16, borderLeft: `4px solid ${template.color}` }}
+      hoverable
+      draggable
+      onDragStart={(e) => handleDragStart(e, template)}
+    >
+      <Space direction="vertical" size="small" style={{ width: '100%' }}>
+        <Title level={5} style={{ margin: 0 }}>
+          {template.activityName}
+        </Title>
+        <Text type="secondary">{template.description}</Text>
+
+        {template.inputs && template.inputs.length > 0 && (
+          <div>
+            <Text strong>Inputs: </Text>
+            <Space size={[0, 4]} wrap>
+              {template.inputs.map((input) => (
+                <Tag key={input} color="blue">
+                  {input}
+                </Tag>
+              ))}
+            </Space>
+          </div>
+        )}
+
+        {template.outputs && template.outputs.length > 0 && (
+          <div>
+            <Text strong>Outputs: </Text>
+            <Space size={[0, 4]} wrap>
+              {template.outputs.map((output) => (
+                <Tag key={output} color="green">
+                  {output}
+                </Tag>
+              ))}
+            </Space>
+          </div>
+        )}
+
+        {template.assignedUsers && template.assignedUsers.length > 0 && (
+          <div>
+            <Text strong>Assigned Users: </Text>
+            <Space size={[0, 4]} wrap>
+              {template.assignedUsers.map((user) => (
+                <Tag key={user}>{user}</Tag>
+              ))}
+            </Space>
+          </div>
+        )}
+      </Space>
+    </Card>
+  );
+
   return (
     <div className="process-flow-container">
+      {contextHolder}
       <div className="header-container">
         <div className="title-section">
           <Title level={3}>{ProcessFlowFormText.MAIN_TITLE}</Title>
@@ -151,7 +332,7 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
         autoComplete="off"
         initialValues={{
           projectFlowName,
-          color: DEFAULT_COLOR, // Add default color to initial values
+          color: DEFAULT_COLOR,
         }}
       >
         <Form.Item<FieldType>
@@ -166,13 +347,32 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
             onChange={(e) => setProjectFlowName(e.target.value)}
           />
         </Form.Item>
-        <Title level={5} className="activities-title">
-          {ProcessFlowFormText.ACTIVITIES.TITLE}
-          <Tooltip title={ProcessFlowFormText.ACTIVITIES.TOOLTIP}>
-            <InfoCircleOutlined className="info-circle-icon" />
-          </Tooltip>
-        </Title>
-        <Card className="process-flow-card">
+
+        <div className="activities-header">
+          <Title level={5}>
+            {ProcessFlowFormText.ACTIVITIES.TITLE}
+            <Tooltip title={ProcessFlowFormText.ACTIVITIES.TOOLTIP}>
+              <InfoCircleOutlined className="info-circle-icon" />
+            </Tooltip>
+            <Button
+              type="primary"
+              icon={<AppstoreOutlined />}
+              onClick={showDrawer}
+              className="templates-button"
+            >
+              Browse Templates
+            </Button>
+          </Title>
+        </div>
+
+        <Card
+          className="process-flow-card"
+          ref={formCardRef}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
+          <div className="drop-indicator">Drop activity template here</div>
           <Row gutter={[16, 16]}>
             <Col xs={24} md={12}>
               <Form.Item<FieldType>
@@ -297,6 +497,26 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
           </Row>
         </Card>
       </Form>
+
+      {/* Templates Drawer */}
+      <Drawer
+        title="Activity Templates"
+        placement="right"
+        onClose={closeDrawer}
+        open={drawerOpen}
+        width={400}
+      >
+        <div style={{ marginBottom: 16 }}>
+          <Text>
+            Drag and drop a template to the form to quickly configure
+            activities.
+          </Text>
+        </div>
+
+        <Divider />
+
+        {activityTemplates.map((template) => renderTemplateCard(template))}
+      </Drawer>
     </div>
   );
 };
