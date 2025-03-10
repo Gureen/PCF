@@ -7,6 +7,8 @@ export type PositionLoggerNodeData = Node<
   description?: string;
   inputs?: string[];
   outputs?: string[];
+  assignedUsers?: string[];
+  color?: string;
 },
   'position-logger'
 >;

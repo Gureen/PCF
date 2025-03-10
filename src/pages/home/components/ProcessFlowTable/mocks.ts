@@ -44,4 +44,21 @@ export const preloadedFlows: SavedFlow[] = [
       },
     ],
   },
+  {
+    id: '2',
+    projectName: 'Service Request Handling',
+    createdAt: '2025-02-20',
+    lastModified: '2025-02-28',
+    activities: [
+      {
+        id: 'content-3',
+        activityName: 'Legal Review',
+        description: 'Ensure content meets legal and compliance requirements',
+        inputs: ['Edited Content', 'Compliance Guidelines'],
+        outputs: ['Legal Approval', 'Compliance Notes'],
+        color: '#faad14',
+        assignedUsers: ['Legal Advisor'],
+      },
+    ],
+  },
 ];

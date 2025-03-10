@@ -1,11 +1,9 @@
 import { type Activity, useProcessFlow } from '@/context';
 import {
-  AppstoreOutlined,
   CloseOutlined,
-  InfoCircleOutlined,
   PlusOutlined,
   SaveOutlined,
-  UndoOutlined,
+  UndoOutlined
 } from '@ant-design/icons';
 import {
   Button,
@@ -18,7 +16,6 @@ import {
   Row,
   Select,
   Space,
-  Tooltip,
   Typography,
   message
 } from 'antd';
@@ -203,9 +200,6 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
         <div className="title-section">
           <Title level={3}>{ProcessFlowFormText.MAIN_TITLE}</Title>
         </div>
-        <div className="action-buttons-section">
-          <ActionButtons form={form} />
-        </div>
       </div>
       <Form
         form={form}
@@ -231,23 +225,7 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
           />
         </Form.Item>
 
-        <div className="activities-header">
-          <Title level={5}>
-            {ProcessFlowFormText.ACTIVITIES.TITLE}
-            <Tooltip title={ProcessFlowFormText.ACTIVITIES.TOOLTIP}>
-              <InfoCircleOutlined className="info-circle-icon" />
-            </Tooltip>
-            <Button
-              type="primary"
-              icon={<AppstoreOutlined />}
-              // onClick={showDrawer}
-              className="templates-button"
-            >
-              Browse Templates
-            </Button>
-          </Title>
-        </div>
-
+  
         <Card
           className="process-flow-card"
           ref={formCardRef}

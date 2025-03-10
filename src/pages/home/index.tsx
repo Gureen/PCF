@@ -2,11 +2,11 @@
 import '@xyflow/react/dist/style.css';
 import { ProcessFlowProvider } from '@/context';
 import { Col, Form, Row } from 'antd';
-import { ConfiguredActivites } from './components/ConfiguredActivities';
 import { ProcessFlowForm } from './components/ProcessFlowForm';
 import { ProcessFlowTable } from './components/ProcessFlowTable';
 import { VisualProcessFlow } from './components/VisualProcessFlow';
 import { ActivityTemplates } from './components/ActivityTemplates';
+import { ActionButtons } from './components/ActionButtons';
 
 const Home = () => {
   const [form] = Form.useForm();
@@ -19,6 +19,8 @@ const Home = () => {
           <ProcessFlowTable />
         </Col>
         <Col xs={24} lg={14}>
+                  <ActionButtons form={form} />
+        
           <ActivityTemplates/>
           <VisualProcessFlow />
         </Col>

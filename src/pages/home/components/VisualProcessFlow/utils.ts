@@ -228,20 +228,27 @@ export const calculateNodePositions = (activities: Activity[]): Node[] => {
 
     activityIds.forEach((id, index) => {
       const activity = activities.find(a => a.id === id)!;
+      
+      // IMPORTANT: Make sure we're correctly mapping all fields from activity to node data
       nodes.push({
         id,
-        type: 'activityNode',
+        // Use the correct node type that matches your registered component
+        type: 'position-logger',
         position: { 
           x: startX + index * horizontalSpacing, 
           y: yPosition 
         },
         data: {
+          // Map the activity name to the label property
           label: activity.activityName,
+          // Make sure to include the description field
           description: activity.description,
-          inputs: activity.inputs,
-          outputs: activity.outputs,
+          // Include inputs and outputs arrays
+          inputs: activity.inputs || [],
+          outputs: activity.outputs || [],
+          // Include color for styling
           color: activity.color || '#1677ff',
-        } as ActivityNodeData,
+        },
       });
     });
   });
