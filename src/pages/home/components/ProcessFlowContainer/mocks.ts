@@ -1,4 +1,4 @@
-import type { SavedFlow } from '@/context';
+import type { SavedFlow } from '@/interfaces';
 
 export const preloadedFlows: SavedFlow[] = [
   {

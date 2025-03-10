@@ -2,7 +2,7 @@ import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Card, Empty, List, Typography } from 'antd';
 import { ACTIVITY_TEXT, GRID_CONFIG, MAX_ACTIVITIES } from './constants';
 import './styles.css';
-import { useProcessFlow } from '@/context';
+import { useProcessFlow } from '@/context/hooks';
 import { TagSection } from '../TagSection';
 
 const { Title } = Typography;

@@ -1,135 +1,124 @@
-import { useProcessFlow } from '@/context';
+import { useProcessFlow } from '@/context/hooks';
+import type { Activity } from '@/interfaces';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import {
   Background,
   type Connection,
   Controls,
   MiniMap,
+  type Node,
+  type NodeMouseHandler,
+  Panel,
   ReactFlow,
   addEdge,
   useEdgesState,
   useNodesState,
-  Panel,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Button, Space, Tooltip } from 'antd';
+import { useEffect, useRef, useState } from 'react';
 import './styles.css';
+import { calculateNodePositions } from './nodeUtils';
 import { edgeTypes, nodeTypes } from './types';
-import { calculateNodePositions, generateEdgesFromActivities } from './utils';
-import type { Activity } from '@/context';
-import { Button, Tooltip, Space } from 'antd';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { generateEdgesFromActivities } from './utils';
 
 export const VisualProcessFlow = () => {
-  const { activities, addActivity, deleteActivity, editActivity } = useProcessFlow();
+  // States
+  const { activities, addActivity, deleteActivity, editActivity } =
+    useProcessFlow();
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
-  
-  // No need for useMemo with React 19's automatic memoization
+
   const initialNodes = calculateNodePositions(activities);
   const initialEdges = generateEdgesFromActivities(activities);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  // Update nodes and edges when activities change
-  useEffect(() => {
-    setNodes(calculateNodePositions(activities));
-    setEdges(generateEdgesFromActivities(activities));
-  }, [activities, setNodes, setEdges]);
-  
-  // Add keyboard event listener for deleting nodes with Delete key
-  // and editing nodes with Enter key
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (selectedNode) {
-        if (event.key === 'Delete') {
-          handleDeleteNode();
-        } else if (event.key === 'Enter') {
-          handleEditNode();
-        }
-      }
-    };
-    
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [selectedNode]);
+  // Functions
+  const onConnect = (connection: Connection): void => {
+    setEdges((edges) => addEdge(connection, edges));
+  };
 
-  const onConnect = useCallback(
-    (connection: Connection) => setEdges((edges) => addEdge(connection, edges)),
-    [setEdges],
-  );
-  
-  // Handle node selection
-  const onNodeClick = useCallback((_, node) => {
+  const onNodeClick: NodeMouseHandler = (_, node: Node): void => {
     setSelectedNode(node.id);
-  }, []);
-  
-  // Handle node double-click for editing
-  const onNodeDoubleClick = useCallback((_, node) => {
+  };
+
+  const onNodeDoubleClick: NodeMouseHandler = (_, node: Node): void => {
     editActivity(node.id);
-  }, [editActivity]);
-  
-  // Handle node deletion
-  const handleDeleteNode = useCallback(() => {
+  };
+
+  const handleDeleteNode = (): void => {
     if (selectedNode) {
       deleteActivity(selectedNode);
       setSelectedNode(null);
     }
-  }, [selectedNode, deleteActivity]);
-  
-  // Handle node editing
-  const handleEditNode = useCallback(() => {
+  };
+
+  const handleEditNode = (): void => {
     if (selectedNode) {
       editActivity(selectedNode);
       setSelectedNode(null);
     }
-  }, [selectedNode, editActivity]);
+  };
 
-  // Handle the drag over event to allow dropping
-  const onDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+  const handleKeyDown = (event: KeyboardEvent): void => {
+    if (selectedNode) {
+      if (event.key === 'Delete') {
+        handleDeleteNode();
+      } else if (event.key === 'Enter') {
+        handleEditNode();
+      }
+    }
+  };
+
+  const setupKeyboardListeners = (): (() => void) => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  };
+
+  const onDragOver = (event: React.DragEvent<HTMLDivElement>): void => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'copy';
-  }, []);
+  };
 
-  // Handle the drop event
-  const onDrop = useCallback(
-    (event: React.DragEvent<HTMLDivElement>) => {
-      event.preventDefault();
+  const onDrop = (event: React.DragEvent<HTMLDivElement>): void => {
+    event.preventDefault();
 
-      // Get the template data from the drag event
-      const jsonData = event.dataTransfer.getData('application/json');
-      if (!jsonData) return;
+    const jsonData = event.dataTransfer.getData('application/json');
+    if (!jsonData) {
+      return;
+    }
 
-      try {
-        const templateActivity = JSON.parse(jsonData) as Activity;
-        
-        // Generate a unique ID for the new activity
-        const newActivity: Activity = {
-          ...templateActivity,
-          id: `activity-${Date.now()}`, // Generate a unique ID
-        };
+    try {
+      const templateActivity = JSON.parse(jsonData) as Activity;
 
-        // Add the new activity to the context
-        addActivity(newActivity);
-      } catch (error) {
-        console.error('Error dropping activity template:', error);
-      }
-    },
-    [addActivity],
-  );
+      const newActivity: Activity = {
+        ...templateActivity,
+        id: `activity-${Date.now()}`,
+      };
+
+      addActivity(newActivity);
+    } catch (error) {
+      console.error('Error dropping activity template:', error);
+    }
+  };
+
+  useEffect(() => {
+    setNodes(calculateNodePositions(activities));
+    setEdges(generateEdgesFromActivities(activities));
+  }, [activities, setNodes, setEdges]);
+
+  useEffect(() => {
+    const cleanup = setupKeyboardListeners();
+    return cleanup;
+  }, [selectedNode]);
 
   return (
-    <div 
-      className="visual-process-flow-container"
-      ref={reactFlowWrapper}
-    >
-      <div 
-        className="flow-container"
-        onDragOver={onDragOver}
-        onDrop={onDrop}
-      >
+    <div className="visual-process-flow-container" ref={reactFlowWrapper}>
+      <div className="flow-container" onDragOver={onDragOver} onDrop={onDrop}>
         {activities.length > 0 ? (
           <ReactFlow
             nodes={nodes}
@@ -146,12 +135,11 @@ export const VisualProcessFlow = () => {
             <Background bgColor="white" />
             <MiniMap />
             <Controls />
-            
-            {/* Control panel for node operations */}
+
             <Panel position="top-right" className="control-panel">
               <Space>
                 <Tooltip title="Edit selected node">
-                  <Button 
+                  <Button
                     type="primary"
                     icon={<EditOutlined />}
                     onClick={handleEditNode}
@@ -162,9 +150,9 @@ export const VisualProcessFlow = () => {
                   </Button>
                 </Tooltip>
                 <Tooltip title="Delete selected node">
-                  <Button 
-                    type="primary" 
-                    danger 
+                  <Button
+                    type="primary"
+                    danger
                     icon={<DeleteOutlined />}
                     onClick={handleDeleteNode}
                     disabled={!selectedNode}
@@ -178,7 +166,8 @@ export const VisualProcessFlow = () => {
           </ReactFlow>
         ) : (
           <div className="empty-flow-message">
-            Drag and drop activity templates here to start building your process flow
+            Drag and drop activity templates here to start building your process
+            flow
           </div>
         )}
       </div>

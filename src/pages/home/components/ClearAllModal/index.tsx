@@ -1,4 +1,4 @@
-import { useProcessFlow } from '@/context';
+import { useProcessFlow } from '@/context/hooks';
 import { Modal } from 'antd';
 
 interface ClearAllModalProps {

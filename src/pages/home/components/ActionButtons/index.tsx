@@ -1,10 +1,10 @@
-import { useProcessFlow } from '@/context';
-import { Button, type FormInstance, Modal, message } from 'antd';
+import { Button, type FormInstance, message } from 'antd';
 import { useState } from 'react';
 import { ClearAllModal } from '../ClearAllModal';
-import type { FormValues } from '../ProcessFlowForm';
 import { ActionButtonsText } from './constants';
 import './styles.css';
+import { useProcessFlow } from '@/context/hooks';
+import type { FormValues } from '../ProcessFlowForm/types';
 
 interface ActionButtonsProps {
   form: FormInstance<FormValues>;
@@ -12,7 +12,6 @@ interface ActionButtonsProps {
 
 export const ActionButtons = ({ form }: ActionButtonsProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isNewModalOpen, setIsNewModalOpen] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
   const {
@@ -29,20 +28,12 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
     setIsModalOpen(true);
   };
 
-  const showNewModal = () => {
-    setIsNewModalOpen(true);
-  };
-
   const handleClearClick = () => {
     showModal();
   };
 
   const handleNewClick = () => {
-    if (hasChanges) {
-      showNewModal();
-    } else {
-      createNewFlow();
-    }
+    createNewFlow();
   };
 
   const createNewFlow = () => {
@@ -59,7 +50,6 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
   const handleSaveClick = () => {
     const projectFlowName = form.getFieldValue('projectFlowName');
 
-    // Check if there are any activities
     if (!activities || activities.length === 0) {
       messageApi.warning({
         content: 'At least one activity is needed to save the process.',
@@ -110,23 +100,6 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
         showModal={showModal}
         setIsModalOpen={setIsModalOpen}
       />
-      {/* Modal for confirming 'New' action when there are unsaved changes */}
-      <Modal
-        title="Unsaved Changes"
-        open={isNewModalOpen}
-        onOk={() => {
-          setIsNewModalOpen(false);
-          createNewFlow();
-        }}
-        onCancel={() => setIsNewModalOpen(false)}
-        okText="Proceed"
-        cancelText="Cancel"
-      >
-        <p>
-          You have unsaved changes. Starting a new process will discard these
-          changes. Do you want to continue?
-        </p>
-      </Modal>
     </div>
   );
 };

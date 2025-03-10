@@ -15,5 +15,12 @@ export const PROCESS_FLOW_TEXT = {
     LOAD: 'Load',
     EXPORT: 'Export as JSON',
     DELETE: 'Delete',
+    IMPORT: 'Import',
   },
+};
+
+export const paginationConfig = {
+  pageSize: 3,
+  showSizeChanger: false,
+  showTotal: PROCESS_FLOW_TEXT.PAGINATION_TOTAL,
 };

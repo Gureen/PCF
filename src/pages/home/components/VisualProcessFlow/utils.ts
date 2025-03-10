@@ -1,22 +1,8 @@
-import type { Activity } from '@/context';
+import type { Activity } from '@/interfaces';
 import type { Edge, Node } from '@xyflow/react';
-import { ActivityNodeData } from './types';
+import { findDisconnectedNodes } from './nodeUtils';
+import type { ValidationError, ValidationResult } from './types';
 
-export interface ValidationResult {
-  isValid: boolean;
-  errors: ValidationError[];
-}
-
-export interface ValidationError {
-  type: 'warning' | 'error';
-  message: string;
-  nodeIds?: string[];
-  edgeIds?: string[];
-}
-
-/**
- * Validates a process flow for common issues
- */
 export const validateProcessFlow = (
   activities: Activity[],
   nodes: Node[],
@@ -24,7 +10,6 @@ export const validateProcessFlow = (
 ): ValidationResult => {
   const errors: ValidationError[] = [];
 
-  // Check if we have any activities
   if (activities.length === 0) {
     errors.push({
       type: 'error',
@@ -33,7 +18,6 @@ export const validateProcessFlow = (
     return { isValid: errors.length === 0, errors };
   }
 
-  // Check for disconnected nodes (no incoming or outgoing connections)
   const disconnectedNodes = findDisconnectedNodes(nodes, edges);
   if (disconnectedNodes.length > 0) {
     errors.push({
@@ -43,7 +27,6 @@ export const validateProcessFlow = (
     });
   }
 
-  // Check for circular dependencies
   const cycles = findCycles(
     nodes.map((n) => n.id),
     edges,
@@ -56,7 +39,6 @@ export const validateProcessFlow = (
     });
   }
 
-  // Check for input/output mismatches
   const mismatches = findInputOutputMismatches(activities);
   if (mismatches.length > 0) {
     errors.push({
@@ -72,29 +54,9 @@ export const validateProcessFlow = (
   };
 };
 
-/**
- * Find nodes with no connections (isolated)
- */
-const findDisconnectedNodes = (nodes: Node[], edges: Edge[]): string[] => {
-  const connectedNodes = new Set<string>();
-
-  for (const edge of edges) {
-    connectedNodes.add(edge.source);
-    connectedNodes.add(edge.target);
-  }
-
-  return nodes
-    .map((node) => node.id)
-    .filter((nodeId) => !connectedNodes.has(nodeId));
-};
-
-/**
- * Find circular dependencies in the flow
- */
 const findCycles = (nodeIds: string[], edges: Edge[]): string[][] => {
   const adjacencyList = new Map<string, string[]>();
 
-  // Build adjacency list
   for (const id of nodeIds) {
     adjacencyList.set(id, []);
   }
@@ -111,7 +73,6 @@ const findCycles = (nodeIds: string[], edges: Edge[]): string[][] => {
 
   const dfs = (nodeId: string, path: string[] = []): boolean => {
     if (recursionStack.has(nodeId)) {
-      // Found a cycle
       const cycleStartIndex = path.indexOf(nodeId);
       cycles.push(path.slice(cycleStartIndex));
       return true;
@@ -146,13 +107,9 @@ const findCycles = (nodeIds: string[], edges: Edge[]): string[][] => {
   return cycles;
 };
 
-/**
- * Find activities with inputs that don't match any output
- */
 const findInputOutputMismatches = (activities: Activity[]): string[] => {
   const allOutputs = new Set<string>();
 
-  // Collect all outputs
   for (const activity of activities) {
     if (activity.outputs) {
       for (const output of activity.outputs) {
@@ -161,7 +118,6 @@ const findInputOutputMismatches = (activities: Activity[]): string[] => {
     }
   }
 
-  // Find activities with inputs that don't match any output
   const mismatchedActivities: string[] = [];
 
   for (const activity of activities) {
@@ -178,86 +134,6 @@ const findInputOutputMismatches = (activities: Activity[]): string[] => {
   return mismatchedActivities;
 };
 
-
-export const calculateNodePositions = (activities: Activity[]): Node[] => {
-  if (!activities.length) return [];
-
-  // Map of node IDs to their indices in the array (for calculating depths)
-  const activityMap = new Map<string, number>();
-  activities.forEach((activity, index) => {
-    activityMap.set(activity.id, index);
-  });
-
-  // Calculate depth of each node (how many steps from start)
-  const calculateDepth = (activityId: string, visited = new Set<string>()): number => {
-    if (visited.has(activityId)) return 0; // Avoid cycles
-    visited.add(activityId);
-
-    const activity = activities.find(a => a.id === activityId);
-    if (!activity || !activity.nextActivities || activity.nextActivities.length === 0) {
-      return 0;
-    }
-
-    let maxDepth = 0;
-    for (const nextId of activity.nextActivities) {
-      const depth = calculateDepth(nextId, new Set(visited)) + 1;
-      maxDepth = Math.max(maxDepth, depth);
-    }
-    return maxDepth;
-  };
-
-  // Group nodes by depth
-  const nodesByDepth = new Map<number, string[]>();
-  activities.forEach(activity => {
-    const depth = calculateDepth(activity.id);
-    if (!nodesByDepth.has(depth)) {
-      nodesByDepth.set(depth, []);
-    }
-    nodesByDepth.get(depth)!.push(activity.id);
-  });
-
-  // Position nodes based on depth and position within depth
-  const nodes: Node[] = [];
-  const verticalSpacing = 150;
-  const horizontalSpacing = 250;
-
-  nodesByDepth.forEach((activityIds, depth) => {
-    const yPosition = depth * verticalSpacing + 100;
-    const totalWidth = activityIds.length * horizontalSpacing;
-    const startX = -totalWidth / 2 + horizontalSpacing / 2;
-
-    activityIds.forEach((id, index) => {
-      const activity = activities.find(a => a.id === id)!;
-      
-      // IMPORTANT: Make sure we're correctly mapping all fields from activity to node data
-      nodes.push({
-        id,
-        // Use the correct node type that matches your registered component
-        type: 'position-logger',
-        position: { 
-          x: startX + index * horizontalSpacing, 
-          y: yPosition 
-        },
-        data: {
-          // Map the activity name to the label property
-          label: activity.activityName,
-          // Make sure to include the description field
-          description: activity.description,
-          // Include inputs and outputs arrays
-          inputs: activity.inputs || [],
-          outputs: activity.outputs || [],
-          // Include color for styling
-          color: activity.color || '#1677ff',
-        },
-      });
-    });
-  });
-
-  return nodes;
-};
-/**
- * Creates a map of output names to activity IDs that produce those outputs
- */
 export const createOutputMap = (
   activities: Array<Activity>,
 ): Map<string, string[]> => {
@@ -343,22 +219,27 @@ const createEdgesForActivity = (
   return edges;
 };
 
-// Generate edges from activities
-export const generateEdgesFromActivities = (activities: Activity[]): Edge[] => {
+/**
+ * Generates edges between activities based on matching inputs and outputs
+ */
+export const generateEdgesFromActivities = (
+  activities: Array<Activity>,
+): Edge[] => {
   const edges: Edge[] = [];
-  
-  activities.forEach(activity => {
-    if (activity.nextActivities) {
-      activity.nextActivities.forEach(targetId => {
-        edges.push({
-          id: `${activity.id}-${targetId}`,
-          source: activity.id,
-          target: targetId,
-          type: 'default', // or custom edge type if defined
-        });
-      });
-    }
-  });
-  
+  const edgeIdSet = new Set<string>();
+
+  // First create a map of all outputs
+  const outputMap = createOutputMap(activities);
+
+  // Then connect inputs to matching outputs
+  for (const activity of activities) {
+    const activityEdges = createEdgesForActivity(
+      activity,
+      outputMap,
+      edgeIdSet,
+    );
+    edges.push(...activityEdges);
+  }
+
   return edges;
 };

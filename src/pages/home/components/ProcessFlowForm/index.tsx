@@ -1,9 +1,9 @@
-import { type Activity, useProcessFlow } from '@/context';
 import {
   CloseOutlined,
+  InfoCircleOutlined,
   PlusOutlined,
   SaveOutlined,
-  UndoOutlined
+  UndoOutlined,
 } from '@ant-design/icons';
 import {
   Button,
@@ -16,33 +16,21 @@ import {
   Row,
   Select,
   Space,
+  Tooltip,
   Typography,
-  message
 } from 'antd';
-import { useEffect, useRef, useState } from 'react';
-import { ActionButtons } from '../ActionButtons';
+import { useEffect, useState } from 'react';
 import { inputOptions, outputOptions } from '../ConfiguredActivities/constants';
 import { ProcessFlowFormText } from './constants';
 import './styles.css';
-import type { FieldType } from './types';
+import { useProcessFlow } from '@/context/hooks';
+import { DEFAULT_COLOR } from '@/utils';
+import { VALIDATION_RULES } from './rules';
+import type { FieldType, FormValues } from './types';
+import { createActivityObject } from './utils';
 
 const { Title } = Typography;
 const { TextArea } = Input;
-
-// Default color to use when none is specified
-const DEFAULT_COLOR = '#1890ff';
-
-
-type ColorType = string | { toHexString?: () => string } | null | undefined;
-export interface FormValues {
-  projectFlowName?: string;
-  activityName?: string;
-  description?: string;
-  inputs?: string[];
-  outputs?: string[];
-  color?: ColorType;
-  assignedUsers?: string[];
-}
 
 interface ProcessFlowFormProps {
   form: FormInstance<FormValues>;
@@ -50,6 +38,7 @@ interface ProcessFlowFormProps {
 
 export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
   const [projectFlowName, setProjectFlowName] = useState('');
+
   const {
     addActivity,
     currentActivity,
@@ -59,66 +48,47 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
     currentFlowName,
   } = useProcessFlow();
 
-  const [messageApi, contextHolder] = message.useMessage();
-  const formCardRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (isEditing && currentActivity) {
-      const colorValue = currentActivity.color
-        ? currentActivity.color
-        : DEFAULT_COLOR;
-
-      form.setFieldsValue({
+  const loadActivityData = () => {
+    if (currentActivity) {
+      const formData = {
         ...currentActivity,
-        color: colorValue,
-      });
-    } else {
-      form.resetFields();
-      form.setFieldsValue({
-        color: DEFAULT_COLOR,
-        projectFlowName: currentFlowName,
-      });
+        color: currentActivity.color || DEFAULT_COLOR,
+      };
+      form.setFieldsValue(formData);
     }
-  }, [currentActivity, isEditing, form, currentFlowName]);
-
-  // Extract color handling logic
-  const getColorValue = (colorInput: ColorType): string => {
-    // If no color input, return default
-    if (!colorInput) {
-      return DEFAULT_COLOR;
-    }
-
-    // If it's already a string (which it should be with format="hex"), return it
-    if (typeof colorInput === 'string') {
-      return colorInput;
-    }
-
-    // If it's an object (shouldn't happen with format="hex" but just in case)
-    if (typeof colorInput === 'object' && colorInput.toHexString) {
-      return colorInput.toHexString();
-    }
-
-    // For any other case, return default
-    return DEFAULT_COLOR;
   };
 
-  const createActivityObject = (
-    values: FormValues,
-    isEditing: boolean,
-    currentActivity: Activity | null,
-  ) => {
-    return {
-      id:
-        isEditing && currentActivity
-          ? currentActivity.id
-          : Date.now().toString(),
-      activityName: values.activityName,
-      description: values.description,
-      inputs: values.inputs || [],
-      outputs: values.outputs || [],
-      color: getColorValue(values.color),
-      assignedUsers: values.assignedUsers || [],
+  const updateFormBasedOnEditingState = () => {
+    if (isEditing && currentActivity) {
+      loadActivityData();
+    } else {
+      resetFormData();
+    }
+  };
+
+  const resetFormData = () => {
+    form.resetFields();
+    const initialData = {
+      color: DEFAULT_COLOR,
+      projectFlowName: currentFlowName,
     };
+    form.setFieldsValue(initialData);
+  };
+
+  const handleProjectFlowNameChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const newName = e.target.value;
+    setProjectFlowName(newName);
+  };
+
+  const handleFormReset = () => {
+    form.resetFields();
+  };
+
+  const handleCancelEditing = () => {
+    form.resetFields();
+    cancelEditing();
   };
 
   const onFinish = (values: FormValues) => {
@@ -131,75 +101,28 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
     }
 
     form.resetFields();
+
     if (isEditing) {
       cancelEditing();
     }
   };
 
-  // Handle template drops
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    if (formCardRef.current) {
-      formCardRef.current.classList.add('dragging-over');
-    }
-  };
+  const renderButtonText = isEditing
+    ? ProcessFlowFormText.ACTIVITIES.BUTTON.UPDATE
+    : ProcessFlowFormText.ACTIVITIES.BUTTON.ADD_ACITIVTY;
 
-  const handleDragLeave = () => {
-    if (formCardRef.current) {
-      formCardRef.current.classList.remove('dragging-over');
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-
-    // Reset styling
-    if (formCardRef.current) {
-      formCardRef.current.classList.remove('dragging-over');
-    }
-
-    try {
-      // Get the template data
-      const templateData = JSON.parse(
-        e.dataTransfer.getData('application/json'),
-      );
-
-      // If we're editing, ask user for confirmation before overwriting
-      if (isEditing) {
-        const proceed = window.confirm(
-          'You are currently editing an activity. Do you want to replace your current changes with this template?',
-        );
-        if (!proceed) {
-          return;
-        }
-      }
-
-      // Set the form values based on the template
-      form.setFieldsValue({
-        activityName: templateData.activityName,
-        description: templateData.description,
-        color: templateData.color,
-        inputs: templateData.inputs,
-        outputs: templateData.outputs,
-        assignedUsers: templateData.assignedUsers,
-      });
-
-      messageApi.success(
-        `Template "${templateData.activityName}" loaded into form`,
-      );
-    } catch (error) {
-      console.error('Error parsing dropped template:', error);
-      messageApi.error('Could not load the template. Please try again.');
-    }
-  };
+  useEffect(() => {
+    updateFormBasedOnEditingState();
+  }, [currentActivity, isEditing, currentFlowName]);
 
   return (
-    <div className="process-flow-container">
-      {contextHolder}
-      <div className="header-container">
-        <div className="title-section">
-          <Title level={3}>{ProcessFlowFormText.MAIN_TITLE}</Title>
-        </div>
+    <>
+      <Title level={2}>{ProcessFlowFormText.MAIN_TITLE}</Title>
+      <div className="title-with-icon">
+        <Title level={4}>{ProcessFlowFormText.ACTIVITIES.TITLE}</Title>
+        <Tooltip title={ProcessFlowFormText.ACTIVITIES.TOOLTIP}>
+          <InfoCircleOutlined className="info-icon" />
+        </Tooltip>
       </div>
       <Form
         form={form}
@@ -215,33 +138,21 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
         <Form.Item<FieldType>
           label={ProcessFlowFormText.PROJECT_FLOW.LABEL}
           name="projectFlowName"
-          rules={[
-            { required: true, message: 'Please enter project flow name' },
-          ]}
+          rules={VALIDATION_RULES.PROJECT_FLOW_NAME}
         >
           <Input
             placeholder={ProcessFlowFormText.PROJECT_FLOW.PLACEHOLDER}
-            onChange={(e) => setProjectFlowName(e.target.value)}
+            onChange={handleProjectFlowNameChange}
           />
         </Form.Item>
 
-  
-        <Card
-          className="process-flow-card"
-          ref={formCardRef}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-        >
-          <div className="drop-indicator">Drop activity template here</div>
+        <Card>
           <Row gutter={[16, 16]}>
             <Col xs={24} md={12}>
               <Form.Item<FieldType>
                 label={ProcessFlowFormText.ACTIVITIES.ACTIVITY_NAME.LABEL}
                 name="activityName"
-                rules={[
-                  { required: true, message: 'Please enter activity name' },
-                ]}
+                rules={VALIDATION_RULES.ACTIVITY_NAME}
               >
                 <Input
                   placeholder={
@@ -305,8 +216,8 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
               </Form.Item>
             </Col>
           </Row>
-          <Row gutter={[16, 16]} align="bottom">
-            <Col xs={24} md={isEditing ? 12 : 16}>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={16}>
               <Form.Item<FieldType>
                 label={ProcessFlowFormText.ACTIVITIES.USERS.LABEL}
                 name="assignedUsers"
@@ -319,11 +230,11 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
                 />
               </Form.Item>
             </Col>
-            <Col xs={24} md={isEditing ? 12 : 8}>
-              <Form.Item label=" " colon={false}>
-                <Space wrap>
+            <Col xs={24} className="action-buttons" md={24}>
+              <Form.Item>
+                <Space>
                   <Button
-                    onClick={() => form.resetFields()}
+                    onClick={handleFormReset}
                     icon={<UndoOutlined />}
                     size="middle"
                     danger
@@ -333,13 +244,10 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
 
                   {isEditing && (
                     <Button
-                      onClick={() => {
-                        form.resetFields();
-                        cancelEditing();
-                      }}
+                      onClick={handleCancelEditing}
                       icon={<CloseOutlined />}
                     >
-                      Cancel
+                      {ProcessFlowFormText.ACTIVITIES.BUTTON.CANCEL}
                     </Button>
                   )}
                   <Button
@@ -348,9 +256,7 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
                     icon={isEditing ? <SaveOutlined /> : <PlusOutlined />}
                     size="middle"
                   >
-                    {isEditing
-                      ? 'Update'
-                      : ProcessFlowFormText.ACTIVITIES.BUTTON.ADD_ACITIVTY}
+                    {renderButtonText}
                   </Button>
                 </Space>
               </Form.Item>
@@ -358,6 +264,6 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
           </Row>
         </Card>
       </Form>
-    </div>
+    </>
   );
 };

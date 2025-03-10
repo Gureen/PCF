@@ -4,6 +4,8 @@ export const ProcessFlowFormText = {
     LABEL: 'Project flow name',
     PLACEHOLDER: 'Enter process flow name',
     ERROR_MESSAGE: 'Please input project flow name!',
+    TOOLTIP:
+      'Add a maximum of 4 activities to the process flow. Each activity can be assigned to one or more users.',
   },
   ACTIVITIES: {
     TITLE: 'Activities configurator',
@@ -42,6 +44,8 @@ export const ProcessFlowFormText = {
     BUTTON: {
       ADD_ACITIVTY: 'Add',
       RESET_FORM: 'Reset',
+      CANCEL: 'Cancel',
+      UPDATE: 'Update',
     },
   },
 };

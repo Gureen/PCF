@@ -1,8 +1,11 @@
 import { Meta, Outlet, Scripts, isRouteErrorResponse } from 'react-router';
-import './styles/global.css';
-
 import type { Route } from './+types/root';
+import type { ErrorMessageProps } from './interfaces';
 
+/**
+ * Application layout component
+ * Defines the main HTML structure and includes necessary meta tags and scripts
+ */
 export function Layout() {
   return (
     <html lang="en">
@@ -15,7 +18,6 @@ export function Layout() {
       </head>
       <body>
         <Scripts />
-        {/* Wrap the Outlet in a div with our content-container class */}
         <div className="content-container">
           <Outlet />
         </div>
@@ -24,36 +26,55 @@ export function Layout() {
   );
 }
 
+/**
+ * Root component that serves as the application's entry point
+ * This simply renders the current route via Outlet
+ */
 // biome-ignore lint/style/noDefaultExport: <explanation>
 export default function Root() {
   return <Outlet />;
 }
 
-export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = 'Oops!';
-  let details = 'An unexpected error occurred.';
-  let stack: string | undefined;
-
-  if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? '404' : 'Error';
-    details =
-      error.status === 404
-        ? 'The requested page could not be found.'
-        : error.statusText || details;
-  } else if (import.meta.env.DEV && error && error instanceof Error) {
-    details = error.message;
-    stack = error.stack;
-  }
+/**
+ * Error message component to display error details
+ */
+function ErrorMessage({ message, details, stack }: ErrorMessageProps) {
+  const stackTraceElement = stack && import.meta.env.DEV && (
+    <pre className="w-full p-4 overflow-x-auto">
+      <code>{stack}</code>
+    </pre>
+  );
 
   return (
     <main className="pt-16 p-4 container mx-auto content-container">
       <h1>{message}</h1>
       <p>{details}</p>
-      {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
-          <code>{stack}</code>
-        </pre>
-      )}
+      {stackTraceElement}
     </main>
   );
+}
+
+/**
+ * Error boundary to catch and display route errors
+ */
+export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  if (isRouteErrorResponse(error)) {
+    const message = error.status === 404 ? '404' : 'Error';
+    const details =
+      error.status === 404
+        ? 'The requested page could not be found.'
+        : error.statusText || 'An unexpected error occurred.';
+
+    return <ErrorMessage message={message} details={details} />;
+  }
+
+  // Handle non-route errors
+  const isDevMode = import.meta.env.DEV;
+  const details =
+    isDevMode && error instanceof Error
+      ? error.message
+      : 'An unexpected error occurred.';
+  const stack = isDevMode && error instanceof Error ? error.stack : undefined;
+
+  return <ErrorMessage message="Oops!" details={details} stack={stack} />;
 }
