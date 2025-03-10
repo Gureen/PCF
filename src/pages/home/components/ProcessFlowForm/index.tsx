@@ -1,3 +1,5 @@
+import { useProcessFlow } from '@/context/hooks';
+import { DEFAULT_COLOR } from '@/utils';
 import {
   CloseOutlined,
   InfoCircleOutlined,
@@ -20,12 +22,9 @@ import {
   Typography,
 } from 'antd';
 import { useEffect, useState } from 'react';
-import { inputOptions, outputOptions } from '../ConfiguredActivities/constants';
 import { ProcessFlowFormText } from './constants';
-import './styles.css';
-import { useProcessFlow } from '@/context/hooks';
-import { DEFAULT_COLOR } from '@/utils';
 import { VALIDATION_RULES } from './rules';
+import './styles.css';
 import type { FieldType, FormValues } from './types';
 import { createActivityObject } from './utils';
 
@@ -118,12 +117,7 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
   return (
     <>
       <Title level={2}>{ProcessFlowFormText.MAIN_TITLE}</Title>
-      <div className="title-with-icon">
-        <Title level={4}>{ProcessFlowFormText.ACTIVITIES.TITLE}</Title>
-        <Tooltip title={ProcessFlowFormText.ACTIVITIES.TOOLTIP}>
-          <InfoCircleOutlined className="info-icon" />
-        </Tooltip>
-      </div>
+
       <Form
         form={form}
         name="processFlowForm"
@@ -138,14 +132,18 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
         <Form.Item<FieldType>
           label={ProcessFlowFormText.PROJECT_FLOW.LABEL}
           name="projectFlowName"
-          rules={VALIDATION_RULES.PROJECT_FLOW_NAME}
         >
           <Input
             placeholder={ProcessFlowFormText.PROJECT_FLOW.PLACEHOLDER}
             onChange={handleProjectFlowNameChange}
           />
         </Form.Item>
-
+        <div className="title-with-icon">
+          <Title level={4}>{ProcessFlowFormText.ACTIVITIES.TITLE}</Title>
+          <Tooltip title={ProcessFlowFormText.ACTIVITIES.TOOLTIP}>
+            <InfoCircleOutlined className="info-icon" />
+          </Tooltip>
+        </div>
         <Card>
           <Row gutter={[16, 16]}>
             <Col xs={24} md={12}>
@@ -176,48 +174,9 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
               </Form.Item>
             </Col>
           </Row>
+
           <Row gutter={[16, 16]}>
-            <Col xs={24} sm={12} md={8}>
-              <Form.Item<FieldType>
-                label={ProcessFlowFormText.ACTIVITIES.INPUTS.LABEL}
-                name="inputs"
-              >
-                <Select
-                  mode="tags"
-                  size="middle"
-                  placeholder={
-                    ProcessFlowFormText.ACTIVITIES.INPUTS.PLACEHOLDER
-                  }
-                  options={inputOptions}
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12} md={8}>
-              <Form.Item<FieldType>
-                label={ProcessFlowFormText.ACTIVITIES.OUTPUTS.LABEL}
-                name="outputs"
-              >
-                <Select
-                  mode="tags"
-                  size="middle"
-                  placeholder={
-                    ProcessFlowFormText.ACTIVITIES.OUTPUTS.PLACEHOLDER
-                  }
-                  options={outputOptions}
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={8}>
-              <Form.Item<FieldType>
-                label={ProcessFlowFormText.ACTIVITIES.COLOR.LABEL}
-                name="color"
-              >
-                <ColorPicker size="middle" format="hex" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={[16, 16]}>
-            <Col xs={24} md={16}>
+            <Col xs={24} md={12}>
               <Form.Item<FieldType>
                 label={ProcessFlowFormText.ACTIVITIES.USERS.LABEL}
                 name="assignedUsers"
@@ -230,36 +189,51 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
                 />
               </Form.Item>
             </Col>
-            <Col xs={24} className="action-buttons" md={24}>
-              <Form.Item>
-                <Space>
-                  <Button
-                    onClick={handleFormReset}
-                    icon={<UndoOutlined />}
-                    size="middle"
-                    danger
+            <Col xs={24} md={12}>
+              <Row gutter={[16, 0]}>
+                <Col xs={16}>
+                  <Form.Item<FieldType>
+                    label={ProcessFlowFormText.ACTIVITIES.COLOR.LABEL}
+                    name="color"
                   >
-                    {ProcessFlowFormText.ACTIVITIES.BUTTON.RESET_FORM}
-                  </Button>
-
-                  {isEditing && (
-                    <Button
-                      onClick={handleCancelEditing}
-                      icon={<CloseOutlined />}
+                    <ColorPicker size="middle" format="hex" />
+                  </Form.Item>
+                </Col>
+                <Col xs={8} style={{ display: 'flex', alignItems: 'flex-end' }}>
+                  <Form.Item style={{ width: '100%' }}>
+                    <Space
+                      style={{ display: 'flex', justifyContent: 'flex-end' }}
                     >
-                      {ProcessFlowFormText.ACTIVITIES.BUTTON.CANCEL}
-                    </Button>
-                  )}
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    icon={isEditing ? <SaveOutlined /> : <PlusOutlined />}
-                    size="middle"
-                  >
-                    {renderButtonText}
-                  </Button>
-                </Space>
-              </Form.Item>
+                      <Button
+                        onClick={handleFormReset}
+                        icon={<UndoOutlined />}
+                        size="middle"
+                        danger
+                      >
+                        {ProcessFlowFormText.ACTIVITIES.BUTTON.RESET_FORM}
+                      </Button>
+
+                      {isEditing && (
+                        <Button
+                          onClick={handleCancelEditing}
+                          icon={<CloseOutlined />}
+                        >
+                          {ProcessFlowFormText.ACTIVITIES.BUTTON.CANCEL}
+                        </Button>
+                      )}
+                      <Button
+                        htmlType="submit"
+                        icon={isEditing ? <SaveOutlined /> : <PlusOutlined />}
+                        size="middle"
+                        color={isEditing ? 'green' : 'blue'}
+                        variant="solid"
+                      >
+                        {renderButtonText}
+                      </Button>
+                    </Space>
+                  </Form.Item>
+                </Col>
+              </Row>
             </Col>
           </Row>
         </Card>

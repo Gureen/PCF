@@ -23,7 +23,6 @@ import { edgeTypes, nodeTypes } from './types';
 import { generateEdgesFromActivities } from './utils';
 
 export const VisualProcessFlow = () => {
-  // States
   const { activities, addActivity, deleteActivity, editActivity } =
     useProcessFlow();
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -35,7 +34,6 @@ export const VisualProcessFlow = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  // Functions
   const onConnect = (connection: Connection): void => {
     setEdges((edges) => addEdge(connection, edges));
   };
@@ -144,7 +142,7 @@ export const VisualProcessFlow = () => {
                     icon={<EditOutlined />}
                     onClick={handleEditNode}
                     disabled={!selectedNode}
-                    size="small"
+                    size="large"
                   >
                     Edit
                   </Button>
@@ -156,7 +154,7 @@ export const VisualProcessFlow = () => {
                     icon={<DeleteOutlined />}
                     onClick={handleDeleteNode}
                     disabled={!selectedNode}
-                    size="small"
+                    size="large"
                   >
                     Delete
                   </Button>

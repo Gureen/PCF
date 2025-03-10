@@ -20,7 +20,7 @@ export const PROCESS_FLOW_TEXT = {
 };
 
 export const paginationConfig = {
-  pageSize: 3,
+  pageSize: 5,
   showSizeChanger: false,
   showTotal: PROCESS_FLOW_TEXT.PAGINATION_TOTAL,
 };

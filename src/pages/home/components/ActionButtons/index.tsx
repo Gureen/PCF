@@ -4,6 +4,7 @@ import { ClearAllModal } from '../ClearAllModal';
 import { ActionButtonsText } from './constants';
 import './styles.css';
 import { useProcessFlow } from '@/context/hooks';
+import { ClearOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import type { FormValues } from '../ProcessFlowForm/types';
 
 interface ActionButtonsProps {
@@ -29,7 +30,11 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
   };
 
   const handleClearClick = () => {
-    showModal();
+    if (activities && activities.length > 0 && hasChanges) {
+      showModal();
+    } else if (activities && activities.length > 0) {
+      clearActivities();
+    }
   };
 
   const handleNewClick = () => {
@@ -49,6 +54,14 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
 
   const handleSaveClick = () => {
     const projectFlowName = form.getFieldValue('projectFlowName');
+
+    if (!projectFlowName || projectFlowName.trim() === '') {
+      messageApi.warning({
+        content: 'Project flow name is required to save the process.',
+        duration: 4,
+      });
+      return;
+    }
 
     if (!activities || activities.length === 0) {
       messageApi.warning({
@@ -80,6 +93,7 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
     <div className="action-buttons">
       {contextHolder}
       <Button type="primary" onClick={handleNewClick}>
+        <PlusOutlined style={{ fontSize: '18px' }} />{' '}
         {ActionButtonsText.NEW_BUTTON}
       </Button>
       <Button
@@ -88,16 +102,17 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
         color="green"
         variant="solid"
       >
+        <SaveOutlined style={{ fontSize: '18px' }} />
         {isSavingExistingFlow
           ? ActionButtonsText.UPDATE_BUTTON
           : ActionButtonsText.SAVE_BUTTON}
       </Button>
       <Button danger onClick={handleClearClick} disabled={isButtonDisabled}>
+        <ClearOutlined style={{ fontSize: '18px' }} />{' '}
         {ActionButtonsText.CLEAR_BUTTON}
       </Button>
       <ClearAllModal
         isModalOpen={isModalOpen}
-        showModal={showModal}
         setIsModalOpen={setIsModalOpen}
       />
     </div>

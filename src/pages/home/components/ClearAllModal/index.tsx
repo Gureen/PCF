@@ -3,7 +3,6 @@ import { Modal } from 'antd';
 
 interface ClearAllModalProps {
   isModalOpen: boolean;
-  showModal: () => void;
   setIsModalOpen: (value: boolean) => void;
 }
 

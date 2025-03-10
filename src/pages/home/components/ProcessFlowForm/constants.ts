@@ -42,7 +42,7 @@ export const ProcessFlowFormText = {
       ],
     },
     BUTTON: {
-      ADD_ACITIVTY: 'Add',
+      ADD_ACITIVTY: 'Add ',
       RESET_FORM: 'Reset',
       CANCEL: 'Cancel',
       UPDATE: 'Update',

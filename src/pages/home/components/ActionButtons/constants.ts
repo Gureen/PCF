@@ -1,6 +1,6 @@
 export enum ActionButtonsText {
-  SAVE_BUTTON = 'Save Process',
-  UPDATE_BUTTON = 'Update Process',
-  CLEAR_BUTTON = 'Clear Activities',
-  NEW_BUTTON = 'New Process',
+  SAVE_BUTTON = 'Save',
+  UPDATE_BUTTON = 'Update',
+  CLEAR_BUTTON = 'Clear',
+  NEW_BUTTON = 'Create',
 }

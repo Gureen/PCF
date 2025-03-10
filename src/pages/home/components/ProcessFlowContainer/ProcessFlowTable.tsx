@@ -64,7 +64,6 @@ export const ProcessFlowTable = ({
       <Table
         dataSource={data}
         pagination={paginationConfig}
-        size="small"
         rowKey={(record) => record.id}
         className="full-width"
       >

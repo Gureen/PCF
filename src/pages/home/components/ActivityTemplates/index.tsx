@@ -1,6 +1,6 @@
 import type { Activity } from '@/interfaces';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { Row, Tooltip, Typography } from 'antd';
+import { Row, Space, Tooltip, Typography } from 'antd';
 import { TemplateCard } from './TemplateCard';
 import { activityTemplates } from './mocks';
 
@@ -27,14 +27,16 @@ export const ActivityTemplates = () => {
           </Tooltip>
         </Title>
       </div>
-      <Row gutter={24}>
-        {activityTemplates.map((template) => (
-          <TemplateCard
-            key={template.id}
-            template={template}
-            handleDragStart={handleDragStart}
-          />
-        ))}
+      <Row gutter={[16, 12]}>
+        <Space size={24}>
+          {activityTemplates.map((template) => (
+            <TemplateCard
+              key={template.id}
+              template={template}
+              handleDragStart={handleDragStart}
+            />
+          ))}
+        </Space>
       </Row>
     </>
   );
