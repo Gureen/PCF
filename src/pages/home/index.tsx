@@ -6,6 +6,7 @@ import { ConfiguredActivites } from './components/ConfiguredActivities';
 import { ProcessFlowForm } from './components/ProcessFlowForm';
 import { ProcessFlowTable } from './components/ProcessFlowTable';
 import { VisualProcessFlow } from './components/VisualProcessFlow';
+import { ActivityTemplates } from './components/ActivityTemplates';
 
 const Home = () => {
   const [form] = Form.useForm();
@@ -18,7 +19,7 @@ const Home = () => {
           <ProcessFlowTable />
         </Col>
         <Col xs={24} lg={14}>
-          <ConfiguredActivites />
+          <ActivityTemplates/>
           <VisualProcessFlow />
         </Col>
       </Row>

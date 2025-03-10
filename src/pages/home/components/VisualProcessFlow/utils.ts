@@ -1,5 +1,6 @@
 import type { Activity } from '@/context';
 import type { Edge, Node } from '@xyflow/react';
+import { ActivityNodeData } from './types';
 
 export interface ValidationResult {
   isValid: boolean;
@@ -177,55 +178,76 @@ const findInputOutputMismatches = (activities: Activity[]): string[] => {
   return mismatchedActivities;
 };
 
-/**
- * Creates a node from an activity
- */
-const createNodeFromActivity = (
-  activity: Activity,
-  position: { x: number; y: number },
-): Node => {
-  return {
-    id: activity.id,
-    type: 'default',
-    position,
-    data: {
-      label: activity.activityName || 'Unnamed Activity',
-      description: activity.description,
-      inputs: activity.inputs,
-      outputs: activity.outputs,
-    },
-    style: {
-      backgroundColor: activity.color || '#1677ff',
-      color: 'white',
-      padding: '10px',
-      borderRadius: '5px',
-      minWidth: '150px',
-    },
+
+export const calculateNodePositions = (activities: Activity[]): Node[] => {
+  if (!activities.length) return [];
+
+  // Map of node IDs to their indices in the array (for calculating depths)
+  const activityMap = new Map<string, number>();
+  activities.forEach((activity, index) => {
+    activityMap.set(activity.id, index);
+  });
+
+  // Calculate depth of each node (how many steps from start)
+  const calculateDepth = (activityId: string, visited = new Set<string>()): number => {
+    if (visited.has(activityId)) return 0; // Avoid cycles
+    visited.add(activityId);
+
+    const activity = activities.find(a => a.id === activityId);
+    if (!activity || !activity.nextActivities || activity.nextActivities.length === 0) {
+      return 0;
+    }
+
+    let maxDepth = 0;
+    for (const nextId of activity.nextActivities) {
+      const depth = calculateDepth(nextId, new Set(visited)) + 1;
+      maxDepth = Math.max(maxDepth, depth);
+    }
+    return maxDepth;
   };
-};
 
-/**
- * Calculate node positions in a grid layout
- */
-export const calculateNodePositions = (
-  activities: Array<Activity>,
-  gridGap = 200,
-  nodesPerRow = 3,
-): Node[] => {
+  // Group nodes by depth
+  const nodesByDepth = new Map<number, string[]>();
+  activities.forEach(activity => {
+    const depth = calculateDepth(activity.id);
+    if (!nodesByDepth.has(depth)) {
+      nodesByDepth.set(depth, []);
+    }
+    nodesByDepth.get(depth)!.push(activity.id);
+  });
+
+  // Position nodes based on depth and position within depth
   const nodes: Node[] = [];
+  const verticalSpacing = 150;
+  const horizontalSpacing = 250;
 
-  for (let index = 0; index < activities.length; index++) {
-    const activity = activities[index];
-    const row = Math.floor(index / nodesPerRow);
-    const col = index % nodesPerRow;
-    const position = { x: col * gridGap, y: row * gridGap };
+  nodesByDepth.forEach((activityIds, depth) => {
+    const yPosition = depth * verticalSpacing + 100;
+    const totalWidth = activityIds.length * horizontalSpacing;
+    const startX = -totalWidth / 2 + horizontalSpacing / 2;
 
-    nodes.push(createNodeFromActivity(activity, position));
-  }
+    activityIds.forEach((id, index) => {
+      const activity = activities.find(a => a.id === id)!;
+      nodes.push({
+        id,
+        type: 'activityNode',
+        position: { 
+          x: startX + index * horizontalSpacing, 
+          y: yPosition 
+        },
+        data: {
+          label: activity.activityName,
+          description: activity.description,
+          inputs: activity.inputs,
+          outputs: activity.outputs,
+          color: activity.color || '#1677ff',
+        } as ActivityNodeData,
+      });
+    });
+  });
 
   return nodes;
 };
-
 /**
  * Creates a map of output names to activity IDs that produce those outputs
  */
@@ -314,27 +336,22 @@ const createEdgesForActivity = (
   return edges;
 };
 
-/**
- * Generates edges between activities based on matching inputs and outputs
- */
-export const generateEdgesFromActivities = (
-  activities: Array<Activity>,
-): Edge[] => {
+// Generate edges from activities
+export const generateEdgesFromActivities = (activities: Activity[]): Edge[] => {
   const edges: Edge[] = [];
-  const edgeIdSet = new Set<string>();
-
-  // First create a map of all outputs
-  const outputMap = createOutputMap(activities);
-
-  // Then connect inputs to matching outputs
-  for (const activity of activities) {
-    const activityEdges = createEdgesForActivity(
-      activity,
-      outputMap,
-      edgeIdSet,
-    );
-    edges.push(...activityEdges);
-  }
-
+  
+  activities.forEach(activity => {
+    if (activity.nextActivities) {
+      activity.nextActivities.forEach(targetId => {
+        edges.push({
+          id: `${activity.id}-${targetId}`,
+          source: activity.id,
+          target: targetId,
+          type: 'default', // or custom edge type if defined
+        });
+      });
+    }
+  });
+  
   return edges;
 };

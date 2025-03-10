@@ -4,10 +4,9 @@ import type { PositionLoggerNodeData } from './types';
 export function PositionLoggerNode({
   data,
 }: NodeProps<PositionLoggerNodeData>) {
+  
   return (
-    <div className="react-flow__node-default">
-      {data.label && <div>{data.label}</div>}
-      <Handle type="source" position={Position.Bottom} />
+    <div className="react-flow__node-default activity-node">
     </div>
   );
 }
