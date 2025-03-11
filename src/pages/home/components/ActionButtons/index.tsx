@@ -5,6 +5,7 @@ import { ActionButtonsText } from './constants';
 import './styles.css';
 import { useProcessFlow } from '@/context/hooks';
 import { ClearOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
+import { ProcessFlowFormText } from '../ProcessFlowForm/constants';
 import type { FormValues } from '../ProcessFlowForm/types';
 
 interface ActionButtonsProps {
@@ -20,6 +21,7 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
     saveFlow,
     currentFlowId,
     hasChanges,
+    isEditing,
     clearActivities,
     setCurrentFlowName,
     setCurrentFlowId,
@@ -86,14 +88,15 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
 
   const isButtonDisabled = !activities || activities.length === 0;
   const isSaveButtonDisabled = !!currentFlowId && !hasChanges;
-
-  const isSavingExistingFlow = !!currentFlowId;
+  const renderButtonText = isEditing
+    ? ProcessFlowFormText.ACTIVITIES.BUTTON.UPDATE
+    : ProcessFlowFormText.ACTIVITIES.BUTTON.ADD_ACITIVTY;
 
   return (
     <div className="action-buttons">
       {contextHolder}
       <Button type="primary" onClick={handleNewClick}>
-        <PlusOutlined style={{ fontSize: '18px' }} />{' '}
+        <PlusOutlined style={{ fontSize: '18px' }} />
         {ActionButtonsText.NEW_BUTTON}
       </Button>
       <Button
@@ -103,12 +106,10 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
         variant="solid"
       >
         <SaveOutlined style={{ fontSize: '18px' }} />
-        {isSavingExistingFlow
-          ? ActionButtonsText.UPDATE_BUTTON
-          : ActionButtonsText.SAVE_BUTTON}
+        {renderButtonText}
       </Button>
       <Button danger onClick={handleClearClick} disabled={isButtonDisabled}>
-        <ClearOutlined style={{ fontSize: '18px' }} />{' '}
+        <ClearOutlined style={{ fontSize: '18px' }} />
         {ActionButtonsText.CLEAR_BUTTON}
       </Button>
       <ClearAllModal

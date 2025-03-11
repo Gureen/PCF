@@ -73,7 +73,17 @@ export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
   };
 
   const updateActivity = (updatedActivity: Activity) => {
-    const activityWithDefaults = applyActivityDefaults(updatedActivity);
+    const existingActivity = activities.find(
+      (a) => a.id === updatedActivity.id,
+    );
+
+    const activityWithConnections = {
+      ...updatedActivity,
+      inputs: existingActivity?.inputs || updatedActivity.inputs || [],
+      outputs: existingActivity?.outputs || updatedActivity.outputs || [],
+    };
+
+    const activityWithDefaults = applyActivityDefaults(activityWithConnections);
     const updatedActivities = updateActivityInList(
       activities,
       activityWithDefaults,

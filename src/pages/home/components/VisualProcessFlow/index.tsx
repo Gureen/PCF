@@ -5,6 +5,7 @@ import {
   Background,
   type Connection,
   Controls,
+  type Edge,
   MiniMap,
   type Node,
   type NodeMouseHandler,
@@ -15,7 +16,7 @@ import {
   useNodesState,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { Button, Space, Tooltip } from 'antd';
+import { Button, Space, Tooltip, message } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import './styles.css';
 import { calculateNodePositions } from './nodeUtils';
@@ -33,9 +34,96 @@ export const VisualProcessFlow = () => {
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const detectCircularDependencies = (
+    nodes: { id: string }[],
+    edges: Edge[],
+  ) => {
+    const adjacencyList: { [key: string]: string[] } = {};
+
+    // Build adjacency list from edges
+    for (const edge of edges) {
+      if (!adjacencyList[edge.source]) {
+        adjacencyList[edge.source] = [];
+      }
+      adjacencyList[edge.source].push(edge.target);
+    }
+
+    // Track visited nodes and recursion stack
+    const visited: { [key: string]: boolean } = {};
+    const recStack: { [key: string]: boolean } = {};
+
+    // Split the cycle detection into smaller functions
+    const checkNeighbor = (neighbor: string): boolean => {
+      // If neighbor is in recursion stack, we found a cycle
+      if (recStack[neighbor]) {
+        return true;
+      }
+
+      // If neighbor is not visited, check if it leads to a cycle
+      if (!visited[neighbor]) {
+        return hasCycle(neighbor);
+      }
+
+      return false;
+    };
+
+    const hasCycle = (nodeId: string): boolean => {
+      // Mark current node as visited and part of recursion stack
+      visited[nodeId] = true;
+      recStack[nodeId] = true;
+
+      // Check all neighbors
+      const neighbors = adjacencyList[nodeId] || [];
+      for (const neighbor of neighbors) {
+        if (checkNeighbor(neighbor)) {
+          return true;
+        }
+      }
+
+      // Remove node from recursion stack and return no cycle
+      recStack[nodeId] = false;
+      return false;
+    };
+
+    // Check each unvisited node
+    for (const node of nodes) {
+      // Skip visited nodes
+      if (visited[node.id]) {
+        continue;
+      }
+
+      // If cycle is found, return true
+      if (hasCycle(node.id)) {
+        return true;
+      }
+    }
+
+    return false;
+  };
 
   const onConnect = (connection: Connection): void => {
-    setEdges((edges) => addEdge(connection, edges));
+    const newEdge = {
+      id: `e-${connection.source}-${connection.target}`,
+      source: connection.source,
+      target: connection.target,
+    };
+
+    const tempEdges = [...edges, newEdge];
+
+    const nodes = activities.map((activity) => ({ id: activity.id }));
+
+    if (detectCircularDependencies(nodes, tempEdges)) {
+      messageApi.error({
+        content: 'Cannot create circular dependency in the flow',
+        duration: 4,
+      });
+      return; // Don't add the edge
+    }
+
+    // If no circular dependency, add the edge
+    setEdges((eds) => addEdge(connection, eds));
   };
 
   const onNodeClick: NodeMouseHandler = (_, node: Node): void => {
@@ -116,6 +204,7 @@ export const VisualProcessFlow = () => {
 
   return (
     <div className="visual-process-flow-container" ref={reactFlowWrapper}>
+      {contextHolder}
       <div className="flow-container" onDragOver={onDragOver} onDrop={onDrop}>
         {activities.length > 0 ? (
           <ReactFlow

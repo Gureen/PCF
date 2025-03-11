@@ -183,8 +183,11 @@ export const createEdge = (
     target: targetId,
     animated: true,
     label,
-    labelStyle: { fill: '#888', fontWeight: 700 },
-    style: { stroke: '#888' },
+    labelBgPadding: [8, 4],
+    labelBgBorderRadius: 4,
+    labelBgStyle: { fill: '#FFFFFF', fillOpacity: 0.75, stroke: '#EEEEEE' },
+    labelStyle: { fill: '#666', fontWeight: 500, fontSize: 12 },
+    style: { stroke: '#888', strokeWidth: 2, strokeDasharray: '5,5' },
   };
 };
 
@@ -238,7 +241,9 @@ export const generateEdgesFromActivities = (
       outputMap,
       edgeIdSet,
     );
-    edges.push(...activityEdges);
+    for (const edge of activityEdges) {
+      edges.push(edge);
+    }
   }
 
   return edges;

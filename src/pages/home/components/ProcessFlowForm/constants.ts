@@ -9,7 +9,7 @@ export const ProcessFlowFormText = {
   },
   ACTIVITIES: {
     TITLE: 'Activities configurator',
-    TOOLTIP: '(Configure activity nodes - maximum 4 allowed)',
+    TOOLTIP: '(Configure activity nodes)',
     ACTIVITY_NAME: {
       LABEL: 'Activity name',
       PLACEHOLDER: 'E.g., Content Creation, Review',
