@@ -6,6 +6,7 @@ import {
   type Connection,
   Controls,
   type Edge,
+  type EdgeChange,
   MiniMap,
   type Node,
   type NodeMouseHandler,
@@ -19,13 +20,19 @@ import '@xyflow/react/dist/style.css';
 import { Button, Space, Tooltip, message } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import './styles.css';
+import type { MessageInstance } from 'antd/es/message/interface';
 import { calculateNodePositions } from './nodeUtils';
 import { edgeTypes, nodeTypes } from './types';
 import { generateEdgesFromActivities } from './utils';
 
 export const VisualProcessFlow = () => {
-  const { activities, addActivity, deleteActivity, editActivity } =
-    useProcessFlow();
+  const {
+    activities,
+    addActivity,
+    deleteActivity,
+    editActivity,
+    setActivities,
+  } = useProcessFlow();
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
@@ -103,6 +110,152 @@ export const VisualProcessFlow = () => {
     return false;
   };
 
+  // Helper function to find an edge by ID
+  const findEdgeById = (
+    edgeId: string,
+    edgesList: Edge[],
+  ): Edge | undefined => {
+    return edgesList.find((edge) => edge.id === edgeId);
+  };
+
+  // Helper function to find an activity by ID
+  const findActivityById = (
+    activityId: string,
+    activitiesList: Activity[],
+  ): Activity | undefined => {
+    return activitiesList.find((activity) => activity.id === activityId);
+  };
+
+  // Helper function to remove connections from an activity
+  const removeConnection = (
+    activity: Activity,
+    activityId: string,
+    valueToRemove: string,
+    connectionType: 'inputs' | 'outputs',
+  ): Activity => {
+    if (activity.id !== activityId) {
+      return activity;
+    }
+
+    const connections = activity[connectionType] || [];
+    return {
+      ...activity,
+      [connectionType]: connections.filter((item) => item !== valueToRemove),
+    };
+  };
+
+  // Main edge change handler
+  const handleEdgesChange = (changes: EdgeChange[]): void => {
+    // Process edge removals to update activities
+    const removals = changes.filter((change) => change.type === 'remove');
+
+    if (removals.length === 0) {
+      // No removals, just call the original handler
+      onEdgesChange(changes);
+      return;
+    }
+
+    let shouldUpdateActivities = false;
+    let updatedActivities = [...activities];
+
+    // Process each edge removal
+    for (const removal of removals) {
+      const edgeToRemove = findEdgeById(removal.id, edges);
+      if (!edgeToRemove) {
+        continue;
+      }
+
+      const { source, target } = edgeToRemove;
+      const sourceActivity = findActivityById(source, activities);
+      const targetActivity = findActivityById(target, activities);
+
+      if (!(sourceActivity && targetActivity)) {
+        continue;
+      }
+
+      shouldUpdateActivities = true;
+      const outputValue = targetActivity.activityName || targetActivity.id;
+      const inputValue = sourceActivity.activityName || sourceActivity.id;
+
+      // Update activities by removing connections
+      updatedActivities = updatedActivities.map((activity) => {
+        // Check if this is the source activity
+        const updatedSource = removeConnection(
+          activity,
+          source,
+          outputValue,
+          'outputs',
+        );
+        if (updatedSource !== activity) {
+          return updatedSource;
+        }
+
+        // Check if this is the target activity
+        return removeConnection(activity, target, inputValue, 'inputs');
+      });
+    }
+
+    // Update activities in context if needed
+    if (shouldUpdateActivities) {
+      setActivities(updatedActivities);
+    }
+
+    // Call the original edge change handler
+    onEdgesChange(changes);
+  };
+
+  // Helper function to validate connection limits
+  const validateConnectionLimits = (
+    sourceActivity: Activity,
+    targetActivity: Activity,
+    messageApi: MessageInstance,
+  ): boolean => {
+    // Validate maximum connections for source node (outputs)
+    const currentSourceOutputs = sourceActivity.outputs || [];
+    if (currentSourceOutputs.length >= 3) {
+      messageApi.error({
+        content: `'${sourceActivity.activityName || sourceActivity.id}' already has the maximum of 3 output connections`,
+        duration: 4,
+      });
+      return false;
+    }
+
+    // Validate maximum connections for target node (inputs)
+    const currentTargetInputs = targetActivity.inputs || [];
+    if (currentTargetInputs.length >= 3) {
+      messageApi.error({
+        content: `'${targetActivity.activityName || targetActivity.id}' already has the maximum of 3 input connections`,
+        duration: 4,
+      });
+      return false;
+    }
+
+    return true;
+  };
+
+  // Helper function to add connection to an activity
+  const addConnection = (
+    activity: Activity,
+    activityId: string,
+    value: string,
+    type: 'inputs' | 'outputs',
+  ): Activity => {
+    if (activity.id !== activityId) {
+      return activity;
+    }
+
+    const connections = activity[type] || [];
+    if (connections.includes(value)) {
+      return activity;
+    }
+
+    return {
+      ...activity,
+      [type]: [...connections, value],
+    };
+  };
+
+  // Main connection handler
   const onConnect = (connection: Connection): void => {
     const newEdge = {
       id: `e-${connection.source}-${connection.target}`,
@@ -111,19 +264,60 @@ export const VisualProcessFlow = () => {
     };
 
     const tempEdges = [...edges, newEdge];
-
     const nodes = activities.map((activity) => ({ id: activity.id }));
 
+    // Check for circular dependencies
     if (detectCircularDependencies(nodes, tempEdges)) {
       messageApi.error({
         content: 'Cannot create circular dependency in the flow',
         duration: 4,
       });
-      return; // Don't add the edge
+      return;
     }
 
-    // If no circular dependency, add the edge
+    // Find the source and target activities
+    const sourceActivity = activities.find(
+      (activity) => activity.id === connection.source,
+    );
+    const targetActivity = activities.find(
+      (activity) => activity.id === connection.target,
+    );
+
+    if (!(sourceActivity && targetActivity)) {
+      return;
+    }
+
+    // Validate connection limits
+    if (!validateConnectionLimits(sourceActivity, targetActivity, messageApi)) {
+      return;
+    }
+
+    // If all validations pass, add the edge
     setEdges((eds) => addEdge(connection, eds));
+
+    // Prepare values for connections
+    const outputValue = targetActivity.activityName || targetActivity.id;
+    const inputValue = sourceActivity.activityName || sourceActivity.id;
+
+    // Update activities with connections
+    const updatedActivities = activities.map((activity) => {
+      // Try to update source activity
+      const withOutput = addConnection(
+        activity,
+        sourceActivity.id,
+        outputValue,
+        'outputs',
+      );
+      if (withOutput !== activity) {
+        return withOutput;
+      }
+
+      // Try to update target activity
+      return addConnection(activity, targetActivity.id, inputValue, 'inputs');
+    });
+
+    // Update activities in the context
+    setActivities(updatedActivities);
   };
 
   const onNodeClick: NodeMouseHandler = (_, node: Node): void => {
@@ -213,7 +407,7 @@ export const VisualProcessFlow = () => {
             onNodesChange={onNodesChange}
             edges={edges}
             edgeTypes={edgeTypes}
-            onEdgesChange={onEdgesChange}
+            onEdgesChange={handleEdgesChange}
             onConnect={onConnect}
             onNodeClick={onNodeClick}
             onNodeDoubleClick={onNodeDoubleClick}
