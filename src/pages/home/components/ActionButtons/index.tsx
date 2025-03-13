@@ -6,7 +6,6 @@ import './styles.css';
 import { useProcessFlow } from '@/context/hooks';
 import type { Activity } from '@/interfaces';
 import { ClearOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
-import { ProcessFlowFormText } from '../ProcessFlowForm/constants';
 import type { FormValues } from '../ProcessFlowForm/types';
 import { generateEdgesFromActivities } from '../VisualProcessFlow/utils';
 
@@ -161,6 +160,12 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
         content: 'The process has been updated.',
       });
     }
+
+    // After saving, the hasChanges flag should be reset
+    // This is handled in the saveFlow function, but we can add a check here if needed
+    if (form.getFieldValue('projectFlowName') !== projectFlowName) {
+      form.setFieldsValue({ projectFlowName });
+    }
   };
 
   const isButtonDisabled = !activities || activities.length === 0;
@@ -180,7 +185,7 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
         variant="solid"
       >
         <SaveOutlined style={{ fontSize: '18px' }} />
-        {ProcessFlowFormText.ACTIVITIES.BUTTON.ADD_ACITIVTY}
+        {currentFlowId ? 'Update' : 'Add'}
       </Button>
       <Button danger onClick={handleClearClick} disabled={isButtonDisabled}>
         <ClearOutlined style={{ fontSize: '18px' }} />

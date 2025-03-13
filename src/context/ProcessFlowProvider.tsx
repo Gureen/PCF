@@ -162,28 +162,42 @@ export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
     return getUpdatedFlowResult();
   };
 
+  // Updated saveFlow function for ProcessFlowProvider
   const saveFlow = (projectFlowName: string) => {
     const flowData = prepareFlowData(projectFlowName, activities);
     const currentDate = getCurrentDateString();
+    let result: ReturnType<
+      | typeof getNewFlowResult
+      | typeof getUnchangedFlowResult
+      | typeof getUpdatedFlowResult
+    >;
 
     if (!currentFlowId) {
-      return saveNewFlow(flowData, currentDate);
+      result = saveNewFlow(flowData, currentDate);
+    } else {
+      const preloadedFlow = findFlowById(preloadedFlowsData, currentFlowId);
+      const savedFlow = findFlowById(savedFlows, currentFlowId);
+
+      if (preloadedFlow) {
+        result = updatePreloadedFlow(preloadedFlow, flowData);
+      } else if (savedFlow) {
+        result = updateSavedFlow(savedFlow, flowData);
+      } else {
+        result = saveNewFlow(flowData, currentDate);
+      }
     }
 
-    const preloadedFlow = findFlowById(preloadedFlowsData, currentFlowId);
-    const savedFlow = findFlowById(savedFlows, currentFlowId);
+    // Reset hasChanges flag after successful save
+    setHasChanges(false);
 
-    if (preloadedFlow) {
-      return updatePreloadedFlow(preloadedFlow, flowData);
-    }
+    // Also update originalActivities to match current activities
+    // This ensures future comparisons correctly determine if changes were made
+    setOriginalActivities([...activities]);
 
-    if (savedFlow) {
-      return updateSavedFlow(savedFlow, flowData);
-    }
-
-    return saveNewFlow(flowData, currentDate);
+    return result;
   };
 
+  // Updated loadFlow function for ProcessFlowProvider
   const loadFlow = (flowId: string) => {
     const flow = findFlowById(allFlows, flowId);
 
@@ -194,6 +208,8 @@ export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
       setOriginalActivities([...activitiesWithDefaults]);
       setCurrentFlowName(flow.projectName);
       setCurrentFlowId(flowId);
+
+      // Explicitly reset the hasChanges flag when loading a flow
       setHasChanges(false);
     }
   };
