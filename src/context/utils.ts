@@ -1,26 +1,19 @@
 import type { Activity, SavedFlow } from '@/interfaces';
-import { DEFAULT_COLOR } from '@/utils';
 
 /**
  * Ensures activity has valid properties by providing defaults for missing values
  */
 export const applyActivityDefaults = (activity: Activity): Activity => {
-  const {
-    color = DEFAULT_COLOR,
-    inputs = [],
-    outputs = [],
-    assignedUsers = [],
-  } = activity;
-
-  const activityWithDefaults = {
-    ...activity,
-    color,
-    inputs,
-    outputs,
-    assignedUsers,
+  return {
+    id: activity.id || crypto.randomUUID(),
+    activityName: activity.activityName || '',
+    description: activity.description || '',
+    inputs: activity.inputs || [],
+    outputs: activity.outputs || [],
+    color: activity.color || '#1677ff',
+    assignedUsers: activity.assignedUsers || [],
+    position: activity.position || undefined,
   };
-
-  return activityWithDefaults;
 };
 
 /**

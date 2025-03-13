@@ -3,12 +3,15 @@ import type { Edge, Node } from '@xyflow/react';
 
 export const createNodeFromActivity = (
   activity: Activity,
-  position: { x: number; y: number },
+  position?: { x: number; y: number },
 ): Node => {
+  // Use the saved position if available, otherwise use the provided position
+  const nodePosition = activity.position || position || { x: 0, y: 0 };
+
   return {
     id: activity.id,
     type: 'position-logger',
-    position,
+    position: nodePosition,
     data: {
       label: activity.activityName || 'Unnamed Activity',
       description: activity.description,
@@ -254,15 +257,49 @@ const groupNodesByLevel = (activities: Activity[]): Map<number, string[]> => {
   return levelGroups;
 };
 
-export const calculateNodePositions = (
-  activities: Array<Activity>,
-  horizontalGap = 250,
-  verticalGap = 150,
+// Create nodes using saved positions
+const createNodesFromSavedPositions = (activities: Activity[]): Node[] => {
+  return activities.map((activity) =>
+    createNodeFromActivity(activity, activity.position),
+  );
+};
+
+// Create nodes for a specific level
+const createNodesForLevel = (
+  level: number,
+  nodesInLevel: string[],
+  activities: Activity[],
+  horizontalGap: number,
+  verticalGap: number,
 ): Node[] => {
-  if (activities.length === 0) {
-    return [];
+  const nodes: Node[] = [];
+
+  // Calculate total width needed for this level
+  const levelWidth = nodesInLevel.length * horizontalGap;
+  const startX = -levelWidth / 2 + horizontalGap / 2;
+
+  for (let nodeIndex = 0; nodeIndex < nodesInLevel.length; nodeIndex++) {
+    const nodeId = nodesInLevel[nodeIndex];
+    const activity = activities.find((a) => a.id === nodeId);
+    if (!activity) {
+      continue;
+    }
+
+    const x = startX + nodeIndex * horizontalGap;
+    const y = level * verticalGap;
+
+    nodes.push(createNodeFromActivity(activity, { x, y }));
   }
 
+  return nodes;
+};
+
+// Calculate positions for nodes without saved positions
+const calculateLayoutPositions = (
+  activities: Activity[],
+  horizontalGap: number,
+  verticalGap: number,
+): Node[] => {
   const levelGroups = groupNodesByLevel(activities);
   const nodes: Node[] = [];
 
@@ -272,26 +309,78 @@ export const calculateNodePositions = (
   // Calculate positions for each node based on its level and position within level
   for (const level of sortedLevels) {
     const nodesInLevel = levelGroups.get(level) || [];
+    const nodesForThisLevel = createNodesForLevel(
+      level,
+      nodesInLevel,
+      activities,
+      horizontalGap,
+      verticalGap,
+    );
 
-    // Calculate total width needed for this level
-    const levelWidth = nodesInLevel.length * horizontalGap;
-    const startX = -levelWidth / 2 + horizontalGap / 2;
-
-    for (let nodeIndex = 0; nodeIndex < nodesInLevel.length; nodeIndex++) {
-      const nodeId = nodesInLevel[nodeIndex];
-      const activity = activities.find((a) => a.id === nodeId);
-      if (!activity) {
-        continue;
-      }
-
-      const x = startX + nodeIndex * horizontalGap;
-      const y = level * verticalGap;
-
-      nodes.push(createNodeFromActivity(activity, { x, y }));
-    }
+    nodes.push(...nodesForThisLevel);
   }
 
   return nodes;
+};
+
+// Handle mixed case - some nodes with positions, some without
+const handleMixedPositions = (
+  activitiesWithPositions: Activity[],
+  activitiesNeedingPositions: Activity[],
+  horizontalGap: number,
+  verticalGap: number,
+): Node[] => {
+  // Get nodes with saved positions
+  const savedNodes = createNodesFromSavedPositions(activitiesWithPositions);
+
+  // Calculate positions for nodes without saved positions
+  const calculatedNodes = calculateLayoutPositions(
+    activitiesNeedingPositions,
+    horizontalGap,
+    verticalGap,
+  );
+
+  // Combine both sets of nodes
+  return [...savedNodes, ...calculatedNodes];
+};
+
+// Main function for calculating node positions
+export const calculateNodePositions = (
+  activities: Array<Activity>,
+  horizontalGap = 250,
+  verticalGap = 150,
+): Node[] => {
+  if (activities.length === 0) {
+    return [];
+  }
+
+  // First check if all nodes have saved positions
+  const allHavePositions = activities.every((activity) => !!activity.position);
+
+  // If all nodes have saved positions, use those directly
+  if (allHavePositions) {
+    return createNodesFromSavedPositions(activities);
+  }
+
+  // Split activities based on whether they have positions
+  const activitiesWithPositions = activities.filter((a) => !!a.position);
+  const activitiesNeedingPositions = activities.filter((a) => !a.position);
+
+  // If some nodes have positions and others don't
+  if (
+    activitiesWithPositions.length > 0 &&
+    activitiesNeedingPositions.length > 0
+  ) {
+    return handleMixedPositions(
+      activitiesWithPositions,
+      activitiesNeedingPositions,
+      horizontalGap,
+      verticalGap,
+    );
+  }
+
+  // If no nodes have positions, calculate all positions
+  return calculateLayoutPositions(activities, horizontalGap, verticalGap);
 };
 
 export const findDisconnectedNodes = (

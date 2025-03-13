@@ -9,10 +9,12 @@ import {
   type EdgeChange,
   MiniMap,
   type Node,
+  type NodeChange,
   type NodeMouseHandler,
   Panel,
   ReactFlow,
   addEdge,
+  reconnectEdge,
   useEdgesState,
   useNodesState,
 } from '@xyflow/react';
@@ -386,6 +388,178 @@ export const VisualProcessFlow = () => {
     }
   };
 
+  const onNodeDragStop: NodeMouseHandler = (_, node) => {
+    // When a node stops being dragged, update its position in the activities state
+    const updatedActivities = activities.map((activity) => {
+      if (activity.id === node.id) {
+        return {
+          ...activity,
+          position: {
+            x: node.position.x,
+            y: node.position.y,
+          },
+        };
+      }
+      return activity;
+    });
+
+    // Update the activities in the context
+    setActivities(updatedActivities);
+  };
+
+  // Modify the handleNodesChange function to handle position changes
+  const handleNodesChange = (changes: NodeChange[]) => {
+    // First, let the React Flow hook handle the visual changes
+    onNodesChange(changes);
+  };
+
+  // Add these to your VisualProcessFlow component
+  const edgeReconnectSuccessful = useRef(true);
+
+  // Add these handler functions to your component
+  const onReconnectStart = (): void => {
+    edgeReconnectSuccessful.current = false;
+  };
+
+  const onReconnect = (oldEdge: Edge, newConnection: Connection): void => {
+    edgeReconnectSuccessful.current = true;
+
+    // Find the source and target activities
+    const sourceActivity = activities.find(
+      (activity) => activity.id === newConnection.source,
+    );
+    const targetActivity = activities.find(
+      (activity) => activity.id === newConnection.target,
+    );
+
+    // Only proceed if both activities exist
+    if (sourceActivity && targetActivity) {
+      // Find the old source and target activities
+      const oldSourceActivity = activities.find(
+        (activity) => activity.id === oldEdge.source,
+      );
+      const oldTargetActivity = activities.find(
+        (activity) => activity.id === oldEdge.target,
+      );
+
+      if (oldSourceActivity && oldTargetActivity) {
+        // Remove old connections
+        const oldOutputValue =
+          oldTargetActivity.activityName || oldTargetActivity.id;
+        const oldInputValue =
+          oldSourceActivity.activityName || oldSourceActivity.id;
+
+        // Update activities by removing old connections and adding new ones
+        let updatedActivities = activities.map((activity) => {
+          // Remove old connections first
+          let updatedActivity = activity;
+
+          if (activity.id === oldEdge.source) {
+            updatedActivity = removeConnection(
+              updatedActivity,
+              oldEdge.source,
+              oldOutputValue,
+              'outputs',
+            );
+          } else if (activity.id === oldEdge.target) {
+            updatedActivity = removeConnection(
+              updatedActivity,
+              oldEdge.target,
+              oldInputValue,
+              'inputs',
+            );
+          }
+
+          return updatedActivity;
+        });
+
+        // Add new connections
+        const outputValue = targetActivity.activityName || targetActivity.id;
+        const inputValue = sourceActivity.activityName || sourceActivity.id;
+
+        updatedActivities = updatedActivities.map((activity) => {
+          // Add new connections
+          if (activity.id === newConnection.source) {
+            return addConnection(
+              activity,
+              newConnection.source,
+              outputValue,
+              'outputs',
+            );
+          }
+          if (activity.id === newConnection.target) {
+            return addConnection(
+              activity,
+              newConnection.target,
+              inputValue,
+              'inputs',
+            );
+          }
+          return activity;
+        });
+
+        // Update activities in context
+        setActivities(updatedActivities);
+      }
+    }
+
+    // Update the edges in the state
+    setEdges((els) => reconnectEdge(oldEdge, newConnection, els));
+  };
+
+  const onReconnectEnd = (_: MouseEvent | TouchEvent, edge: Edge): void => {
+    if (!edgeReconnectSuccessful.current) {
+      // Edge was dropped in empty space
+      // Find the edge to delete
+      const edgeToDelete = edges.find((e) => e.id === edge.id);
+      if (!edgeToDelete) {
+        return;
+      }
+
+      const { source, target } = edgeToDelete;
+      const sourceActivity = activities.find(
+        (activity) => activity.id === source,
+      );
+      const targetActivity = activities.find(
+        (activity) => activity.id === target,
+      );
+
+      if (!(sourceActivity && targetActivity)) {
+        return;
+      }
+
+      // Values used in the connections
+      const outputValue = targetActivity.activityName || targetActivity.id;
+      const inputValue = sourceActivity.activityName || sourceActivity.id;
+
+      // Update activities by removing connections
+      const updatedActivities = activities.map((activity) => {
+        // Check if this is the source activity
+        const updatedSource = removeConnection(
+          activity,
+          source,
+          outputValue,
+          'outputs',
+        );
+        if (updatedSource !== activity) {
+          return updatedSource;
+        }
+
+        // Check if this is the target activity
+        return removeConnection(activity, target, inputValue, 'inputs');
+      });
+
+      // Update activities in context
+      setActivities(updatedActivities);
+
+      // Remove the edge from the edges state
+      setEdges((eds) => eds.filter((e) => e.id !== edge.id));
+    }
+
+    // Reset the flag
+    edgeReconnectSuccessful.current = true;
+  };
+
   useEffect(() => {
     setNodes(calculateNodePositions(activities));
     setEdges(generateEdgesFromActivities(activities));
@@ -404,13 +578,17 @@ export const VisualProcessFlow = () => {
           <ReactFlow
             nodes={nodes}
             nodeTypes={nodeTypes}
-            onNodesChange={onNodesChange}
+            onNodesChange={handleNodesChange}
             edges={edges}
             edgeTypes={edgeTypes}
             onEdgesChange={handleEdgesChange}
             onConnect={onConnect}
             onNodeClick={onNodeClick}
             onNodeDoubleClick={onNodeDoubleClick}
+            onNodeDragStop={onNodeDragStop}
+            onReconnectStart={onReconnectStart}
+            onReconnect={onReconnect}
+            onReconnectEnd={onReconnectEnd}
             fitView
           >
             <Background bgColor="white" />

@@ -13,6 +13,10 @@ export type Activity = {
   color?: string;
   assignedUsers?: string[];
   isEmpty?: boolean;
+  position?: {
+    x: number;
+    y: number;
+  };
 };
 
 export type SavedFlow = {
