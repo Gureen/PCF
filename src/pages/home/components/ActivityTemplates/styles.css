@@ -1,9 +1,19 @@
 .info-icon {
-    margin-left: 8px;
-    font-size: 16px;
-    color: #1677ff;
-  }
+  margin-left: 8px;
+  font-size: 16px;
+  color: #1677ff;
+}
 
-  .title {
-    margin:0
-  }
+.title {
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.template-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 12px;
+}

@@ -46,13 +46,4 @@ export const activityTemplates: Activity[] = [
     color: '#722ed1',
     assignedUsers: [],
   },
-  {
-    id: '3a2d1e0f-9g8h-7i6j-5k4l-3m2n1o0p9q8r',
-    activityName: 'Initial Review',
-    description: '',
-    inputs: [],
-    outputs: [],
-    color: '#eb2f96',
-    assignedUsers: [],
-  },
 ];

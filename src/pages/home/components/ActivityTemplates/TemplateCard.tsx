@@ -1,5 +1,5 @@
 import type { Activity } from '@/interfaces';
-import { Card, Space, Typography } from 'antd';
+import { Card, Typography } from 'antd';
 import './styles.css';
 
 const { Title } = Typography;
@@ -18,19 +18,18 @@ export const TemplateCard = ({
 }: TemplateCardProps) => {
   return (
     <Card
-      className="info-icon"
       hoverable
       draggable
       onDragStart={(e) => handleDragStart(e, template)}
       style={{
         borderLeft: `4px solid ${template.color}`,
+        height: '100%',
+        minWidth: '160px',
       }}
     >
-      <Space>
-        <Title level={5} className="title">
-          {template.activityName}
-        </Title>
-      </Space>
+      <Title level={5} className="title">
+        {template.activityName}
+      </Title>
     </Card>
   );
 };

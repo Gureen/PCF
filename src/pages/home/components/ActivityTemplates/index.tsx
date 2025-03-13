@@ -1,10 +1,11 @@
 import { useProcessFlow } from '@/context/hooks';
 import type { Activity } from '@/interfaces';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { Row, Space, Tooltip, Typography } from 'antd';
+import { Tooltip, Typography } from 'antd';
 import { useEffect } from 'react';
 import { TemplateCard } from './TemplateCard';
 import { activityTemplates } from './mocks';
+import './styles.css';
 
 const { Title } = Typography;
 
@@ -68,17 +69,15 @@ export const ActivityTemplates = () => {
           </Tooltip>
         </Title>
       </div>
-      <Row gutter={[16, 12]}>
-        <Space size={24}>
-          {activityTemplates.map((template) => (
-            <TemplateCard
-              key={template.id}
-              template={template}
-              handleDragStart={handleDragStart}
-            />
-          ))}
-        </Space>
-      </Row>
+      <div className="template-container">
+        {activityTemplates.map((template) => (
+          <TemplateCard
+            key={template.id}
+            template={template}
+            handleDragStart={handleDragStart}
+          />
+        ))}
+      </div>
     </>
   );
 };

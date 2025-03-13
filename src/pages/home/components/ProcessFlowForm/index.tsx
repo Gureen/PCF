@@ -17,7 +17,6 @@ import {
   Input,
   Row,
   Select,
-  Space,
   Tooltip,
   Typography,
 } from 'antd';
@@ -146,7 +145,7 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
         </div>
         <Card>
           <Row gutter={[16, 16]}>
-            <Col xs={24} md={12}>
+            <Col xs={24} sm={24} md={12}>
               <Form.Item<FieldType>
                 label={ProcessFlowFormText.ACTIVITIES.ACTIVITY_NAME.LABEL}
                 name="activityName"
@@ -160,7 +159,7 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
                 />
               </Form.Item>
             </Col>
-            <Col xs={24} md={12}>
+            <Col xs={24} sm={24} md={12}>
               <Form.Item<FieldType>
                 label={ProcessFlowFormText.ACTIVITIES.DESCRIPTION.LABEL}
                 name="description"
@@ -176,7 +175,7 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
           </Row>
 
           <Row gutter={[16, 16]}>
-            <Col xs={24} md={12}>
+            <Col xs={24} sm={12} md={12}>
               <Form.Item<FieldType>
                 label={ProcessFlowFormText.ACTIVITIES.USERS.LABEL}
                 name="assignedUsers"
@@ -189,28 +188,31 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
                 />
               </Form.Item>
             </Col>
-            <Col xs={24} md={12}>
-              <Row gutter={[16, 0]}>
-                <Col xs={16}>
-                  <Form.Item<FieldType>
-                    label={ProcessFlowFormText.ACTIVITIES.COLOR.LABEL}
-                    name="color"
-                  >
-                    <ColorPicker size="middle" format="hex" />
-                  </Form.Item>
-                </Col>
-                <Col xs={8} style={{ display: 'flex', alignItems: 'flex-end' }}>
-                  <Form.Item style={{ width: '100%' }}>
-                    <Space
-                      style={{ display: 'flex', justifyContent: 'flex-end' }}
+            <Col xs={24} sm={12} md={12}>
+              <Form.Item label={ProcessFlowFormText.ACTIVITIES.COLOR.LABEL}>
+                <Row gutter={[8, 8]}>
+                  <Col xs={6} sm={4} md={4} lg={3}>
+                    <Form.Item<FieldType> name="color" noStyle>
+                      <ColorPicker size="middle" format="hex" />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={18} sm={20} md={20} lg={21}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        flexWrap: 'wrap',
+                        gap: '8px',
+                      }}
                     >
                       <Button
                         onClick={handleFormReset}
                         icon={<UndoOutlined />}
                         size="middle"
                         danger
+                        style={{ borderColor: '#ff4d4f', color: '#ff4d4f' }}
                       >
-                        {ProcessFlowFormText.ACTIVITIES.BUTTON.RESET_FORM}
+                        Reset
                       </Button>
 
                       {isEditing && (
@@ -218,22 +220,21 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
                           onClick={handleCancelEditing}
                           icon={<CloseOutlined />}
                         >
-                          {ProcessFlowFormText.ACTIVITIES.BUTTON.CANCEL}
+                          Cancel
                         </Button>
                       )}
                       <Button
                         htmlType="submit"
                         icon={isEditing ? <SaveOutlined /> : <PlusOutlined />}
                         size="middle"
-                        color={isEditing ? 'green' : 'blue'}
-                        variant="solid"
+                        type="primary"
                       >
                         {renderButtonText}
                       </Button>
-                    </Space>
-                  </Form.Item>
-                </Col>
-              </Row>
+                    </div>
+                  </Col>
+                </Row>
+              </Form.Item>
             </Col>
           </Row>
         </Card>

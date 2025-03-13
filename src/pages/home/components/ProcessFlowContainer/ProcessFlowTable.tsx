@@ -47,7 +47,7 @@ export const ProcessFlowTable = ({
 
   return (
     <Space direction="vertical" className="full-width">
-      <Space>
+      <Space className="table-controls">
         <Input
           prefix={<SearchOutlined />}
           placeholder={PROCESS_FLOW_TEXT.SEARCH_PLACEHOLDER}
@@ -65,32 +65,36 @@ export const ProcessFlowTable = ({
         dataSource={data}
         pagination={paginationConfig}
         rowKey={(record) => record.id}
-        className="full-width"
+        className="process-flow-table"
+        scroll={{ x: 'max-content' }}
       >
         <Table.Column
           title={PROCESS_FLOW_TEXT.COLUMN.PROJECT_NAME}
           dataIndex="projectName"
           key="projectName"
           sorter={(a, b) => a.projectName.localeCompare(b.projectName)}
+          width="40%"
+          className="project-name-column"
         />
 
         <Table.Column
           title={PROCESS_FLOW_TEXT.COLUMN.CREATED}
           dataIndex="createdAt"
           key="createdAt"
-          width={120}
+          width="20%"
         />
 
         <Table.Column
           title={PROCESS_FLOW_TEXT.COLUMN.LAST_MODIFIED}
           dataIndex="lastModified"
           key="lastModified"
-          width={120}
+          width="20%"
         />
         <Table.Column
           title={PROCESS_FLOW_TEXT.COLUMN.ACTIONS}
           key="actions"
-          width={150}
+          width="20%"
+          align="center"
           render={(_, record: SavedFlow) => {
             return (
               <Space size="small">

@@ -1,17 +1,49 @@
-  .process-flow-title {
-    font-size: 18px;
-  }
-  
-  .full-width {
-    width: 100%;
-  }
-  
-  .search-input {
-    width: 250px;
-  }
+.process-flow-title {
+  font-size: 18px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.search-input {
+  width: 250px;
+}
+
+.table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.import-button {
+  background-color: #1677ff;
+  border-color: #1677ff;
+}
+
+.import-button:hover {
+  background-color: #4096ff;
+  border-color: #4096ff;
+}
+
+.process-flow-table {
+  width: 100%;
+}
+
+.process-flow-divider {
+  margin: 24px 0 16px;
+}
+
+.info-icon {
+  color: #1890ff;
+  margin-left: 8px;
+  cursor: pointer;
+}
 
 .ant-table-thead > tr > th {
-    background-color: #dbdbdb !important;
-    color: #000000 !important;
-  }
-  
+  background-color: #dbdbdb !important;
+  color: #000000 !important;
+}
