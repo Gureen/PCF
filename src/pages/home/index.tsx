@@ -1,4 +1,3 @@
-import '@xyflow/react/dist/style.css';
 import { Col, Form, Row } from 'antd';
 import { ActionButtons } from './components/ActionButtons';
 import { ActivityTemplates } from './components/ActivityTemplates';

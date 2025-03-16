@@ -1,5 +1,21 @@
-html, body {
-    background-color: #b4a7a76e;
-    margin-inline: 20px;
-  }
-  
+html,
+body {
+  background-color: #d4e0ff;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.ant-row {
+  margin: 5px 0 !important;
+  padding: 0 10px;
+}
+
+.ant-form-item {
+  margin-bottom: 8px !important;
+}
+
+.ant-card-body {
+  padding: 16px !important;
+}

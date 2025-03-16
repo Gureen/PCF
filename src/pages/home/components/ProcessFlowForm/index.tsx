@@ -1,8 +1,8 @@
+import { DEFAULT_COLOR } from '@/constants/text';
 import { useProcessFlow } from '@/context/hooks';
-import { DEFAULT_COLOR } from '@/utils';
+import { enLanguage } from '@/language/english';
 import {
   CloseOutlined,
-  InfoCircleOutlined,
   PlusOutlined,
   SaveOutlined,
   UndoOutlined,
@@ -11,33 +11,26 @@ import {
   Button,
   Card,
   Col,
-  ColorPicker,
-  DatePicker,
   Form,
   type FormInstance,
-  Input,
   Row,
-  Select,
-  Tooltip,
   Typography,
 } from 'antd';
-import { useEffect, useState } from 'react';
-import { ProcessFlowFormText } from './constants';
-import { VALIDATION_RULES } from './rules';
+import { useEffect } from 'react';
+import { ActivityHeader } from './ActivityHeader';
+import { ActivityTopSection } from './ActivityTopSection';
 import './styles.css';
-import type { FieldType, FormValues } from './types';
+import { ActivityBottomSection } from './ActivityBottomSection';
+import { ProjectFlowSection } from './ProjectFlowSection';
+import type { FormValues } from './types';
 import { createActivityObject } from './utils';
 
 const { Title } = Typography;
-const { TextArea } = Input;
-
 interface ProcessFlowFormProps {
   form: FormInstance<FormValues>;
 }
 
 export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
-  const [projectFlowName, setProjectFlowName] = useState('');
-
   const {
     addActivity,
     currentActivity,
@@ -47,51 +40,35 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
     currentFlowName,
   } = useProcessFlow();
 
-  const loadActivityData = () => {
-    if (currentActivity) {
-      const formData = {
-        ...currentActivity,
-        color: currentActivity.color || DEFAULT_COLOR,
-      };
-      form.setFieldsValue(formData);
+  const buttonSubmitText = isEditing
+    ? enLanguage.ACTIVITIES.BUTTON.UPDATE
+    : enLanguage.ACTIVITIES.BUTTON.ADD_ACITIVTY;
+  const buttonSubmitIcon = isEditing ? <SaveOutlined /> : <PlusOutlined />;
+  const buttonSubmitColor = isEditing ? 'green' : 'blue';
+
+  const resetForm = (withDefaults = true) => {
+    form.resetFields();
+    if (withDefaults) {
+      form.setFieldsValue({
+        color: DEFAULT_COLOR,
+        projectFlowName: currentFlowName,
+      });
     }
-  };
-
-  const updateFormBasedOnEditingState = () => {
-    if (isEditing && currentActivity) {
-      loadActivityData();
-    } else {
-      resetFormData();
-    }
-  };
-
-  const resetFormData = () => {
-    form.resetFields();
-    const initialData = {
-      color: DEFAULT_COLOR,
-      projectFlowName: currentFlowName,
-    };
-    form.setFieldsValue(initialData);
-  };
-
-  const handleProjectFlowNameChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const newName = e.target.value;
-    setProjectFlowName(newName);
-  };
-
-  const handleFormReset = () => {
-    form.resetFields();
-  };
-
-  const handleCancelEditing = () => {
-    form.resetFields();
-    cancelEditing();
   };
 
   const onFinish = (values: FormValues) => {
-    const activity = createActivityObject(values, isEditing, currentActivity);
+    const trimmedValues = {
+      ...values,
+      activityName: values.activityName?.trim(),
+      approvalCriteria: values.approvalCriteria?.trim(),
+      description: values.description?.trim(),
+    };
+
+    const activity = createActivityObject(
+      trimmedValues,
+      isEditing,
+      currentActivity,
+    );
 
     if (isEditing && currentActivity) {
       updateActivity(activity);
@@ -99,24 +76,36 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
       addActivity(activity);
     }
 
-    form.resetFields();
+    resetForm(false);
 
     if (isEditing) {
       cancelEditing();
     }
   };
 
-  const renderButtonText = isEditing
-    ? ProcessFlowFormText.ACTIVITIES.BUTTON.UPDATE
-    : ProcessFlowFormText.ACTIVITIES.BUTTON.ADD_ACITIVTY;
+  const handleCancelEditing = () => {
+    resetForm(false);
+    cancelEditing();
+  };
+
+  const initializeForm = () => {
+    if (isEditing && currentActivity) {
+      form.setFieldsValue({
+        ...currentActivity,
+        color: currentActivity.color || DEFAULT_COLOR,
+      });
+    } else {
+      resetForm();
+    }
+  };
 
   useEffect(() => {
-    updateFormBasedOnEditingState();
-  }, [currentActivity, isEditing, currentFlowName]);
+    initializeForm();
+  }, [currentActivity, isEditing, currentFlowName, form]);
 
   return (
-    <>
-      <Title level={2}>{ProcessFlowFormText.MAIN_TITLE}</Title>
+    <div className="process-flow-container">
+      <Title level={3}>{enLanguage.MAIN_TITLE}</Title>
       <Form
         form={form}
         name="processFlowForm"
@@ -124,183 +113,47 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
         onFinish={onFinish}
         autoComplete="off"
         initialValues={{
-          projectFlowName,
           color: DEFAULT_COLOR,
+          projectFlowName: currentFlowName,
         }}
       >
-        <Form.Item<FieldType>
-          label={ProcessFlowFormText.PROJECT_FLOW.LABEL}
-          name="projectFlowName"
-        >
-          <Input
-            placeholder={ProcessFlowFormText.PROJECT_FLOW.PLACEHOLDER}
-            onChange={handleProjectFlowNameChange}
-          />
-        </Form.Item>
-        <div className="title-with-icon">
-          <Title level={4}>{ProcessFlowFormText.ACTIVITIES.TITLE}</Title>
-          <Tooltip title={ProcessFlowFormText.ACTIVITIES.TOOLTIP}>
-            <InfoCircleOutlined className="info-icon" />
-          </Tooltip>
-        </div>
-
+        <ProjectFlowSection />
+        <ActivityHeader />
         <Card>
-          <Row gutter={[16, 16]}>
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item<FieldType>
-                label={ProcessFlowFormText.ACTIVITIES.ACTIVITY_NAME.LABEL}
-                name="activityName"
-                rules={VALIDATION_RULES.ACTIVITY_NAME}
-              >
-                <Input
-                  placeholder={
-                    ProcessFlowFormText.ACTIVITIES.ACTIVITY_NAME.PLACEHOLDER
-                  }
-                  size="middle"
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item<FieldType>
-                label={ProcessFlowFormText.ACTIVITIES.DESCRIPTION.LABEL}
-                name="description"
-              >
-                <TextArea
-                  placeholder={
-                    ProcessFlowFormText.ACTIVITIES.DESCRIPTION.PLACEHOLDER
-                  }
-                  size="middle"
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={[16, 16]}>
-            {/* Second Row */}
-            <Col xs={24} sm={8} md={8}>
-              <Form.Item<FieldType>
-                label={ProcessFlowFormText.ACTIVITIES.USERS.LABEL}
-                name="assignedUsers"
-              >
-                <Select
-                  mode="multiple"
-                  size="middle"
-                  placeholder={ProcessFlowFormText.ACTIVITIES.USERS.PLACEHOLDER}
-                  options={ProcessFlowFormText.ACTIVITIES.USERS.OPTIONS}
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={8} md={8}>
-              <Form.Item<FieldType>
-                label="Deadline"
-                name="deadline"
-                tooltip="Set a deadline for this activity"
-              >
-                <DatePicker
-                  placeholder="Select deadline date"
-                  style={{ width: '100%' }}
-                  format="YYYY-MM-DD"
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={8} md={8}>
-              <Form.Item
-                name="color"
-                label={ProcessFlowFormText.ACTIVITIES.COLOR.LABEL}
-              >
-                <ColorPicker size="middle" format="hex" />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          {/* Third Row - Added for approval criteria */}
-          <Row gutter={[16, 16]}>
-            <Col xs={24} sm={12} md={12}>
-              <Form.Item<FieldType>
-                label="Approval Criteria"
-                name="approvalCriteria"
-                tooltip="Define what is required for this activity to be approved"
-              >
-                <TextArea
-                  placeholder="E.g., Requires manager approval for amounts over $1000"
-                  rows={2}
-                />
-              </Form.Item>
-            </Col>
-            {/* <Col xs={24} sm={12} md={12}>
-              <Form.Item<FieldType>
-                label="Priority"
-                name="priority"
-                tooltip="Set the priority level for this activity"
-              >
-                <Select
-                  placeholder="Select priority"
-                  options={PRIORITY_OPTIONS}
-                  style={{ width: '100%' }}
-                />
-              </Form.Item>
-            </Col> */}
-          </Row>
-
-          {/* Fourth Row - Notification settings */}
-          {/* <Row gutter={[16, 16]}>
-            <Col xs={24}>
-              <Form.Item<FieldType>
-                label="Notify Users"
-                name="notifyUsers"
-                tooltip="Select users who should be notified about this activity"
-              >
-                <Select
-                  mode="multiple"
-                  placeholder="Select users to notify"
-                  style={{ width: '100%' }}
-                  options={USER_OPTIONS}
-                />
-              </Form.Item>
-            </Col>
-          </Row> */}
-
-          {/* Buttons Row */}
+          <ActivityTopSection />
+          <ActivityBottomSection />
           <Row>
             <Col xs={24}>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                  gap: '8px',
-                }}
-              >
+              <div className="form-button">
                 <Button
-                  onClick={handleFormReset}
+                  onClick={() => resetForm()}
                   icon={<UndoOutlined />}
-                  size="middle"
                   danger
-                  style={{ borderColor: '#ff4d4f', color: '#ff4d4f' }}
                 >
-                  Reset
+                  {enLanguage.ACTIVITIES.BUTTON.RESET_FORM}
                 </Button>
-
                 {isEditing && (
                   <Button
                     onClick={handleCancelEditing}
                     icon={<CloseOutlined />}
                   >
-                    Cancel
+                    {enLanguage.ACTIVITIES.BUTTON.CANCEL}
                   </Button>
                 )}
                 <Button
                   htmlType="submit"
-                  icon={isEditing ? <SaveOutlined /> : <PlusOutlined />}
+                  icon={buttonSubmitIcon}
                   size="middle"
-                  type="primary"
+                  color={buttonSubmitColor}
+                  variant="solid"
                 >
-                  {renderButtonText}
+                  {buttonSubmitText}
                 </Button>
               </div>
             </Col>
           </Row>
         </Card>
       </Form>
-    </>
+    </div>
   );
 };

@@ -1,3 +1,5 @@
+import type { Dayjs } from 'dayjs';
+
 export interface ErrorMessageProps {
   message: string;
   details: string;
@@ -17,9 +19,8 @@ export type Activity = {
     x: number;
     y: number;
   };
-  deadline?: string;
+  deadline?: Dayjs | string;
   approvalCriteria?: string;
-  notifyUsers?: string[];
 };
 
 export type SavedFlow = {

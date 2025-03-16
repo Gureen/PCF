@@ -1,4 +1,5 @@
 import type { Activity, SavedFlow } from '@/interfaces';
+import dayjs from 'dayjs';
 
 /**
  * Ensures activity has valid properties by providing defaults for missing values
@@ -13,7 +14,7 @@ export const applyActivityDefaults = (activity: Activity): Activity => {
     color: activity.color,
     assignedUsers: activity.assignedUsers || [],
     position: activity.position || undefined,
-    deadline: activity.deadline || undefined,
+    deadline: activity.deadline ? dayjs(activity.deadline) : undefined,
     approvalCriteria: activity.approvalCriteria || '',
   };
 };

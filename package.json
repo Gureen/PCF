@@ -40,6 +40,7 @@
     "antd": "^5.24.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dayjs": "^1.11.13",
     "isbot": "^5",
     "lucide-react": "^0.477.0",
     "pnpm": "^10.5.2",

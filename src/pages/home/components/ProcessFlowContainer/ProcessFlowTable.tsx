@@ -65,7 +65,6 @@ export const ProcessFlowTable = ({
         dataSource={data}
         pagination={paginationConfig}
         rowKey={(record) => record.id}
-        className="process-flow-table"
         scroll={{ x: 'max-content' }}
       >
         <Table.Column

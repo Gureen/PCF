@@ -12,7 +12,6 @@ export type PositionLoggerNodeData = Node<
     deadline?: string;
     approvalCriteria?: string;
     priority?: string;
-    notifyUsers?: string[];
   },
   'position-logger'
 >;

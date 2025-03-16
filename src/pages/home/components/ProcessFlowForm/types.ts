@@ -1,23 +1,12 @@
-export type FieldType = {
+import type { Dayjs } from 'dayjs';
+
+export type FormValues = {
   projectFlowName?: string;
   activityName?: string;
   description?: string;
   color?: string;
   assignedUsers?: string[];
-  deadline?: string;
+  deadline?: Dayjs | string;
   approvalCriteria?: string;
   priority?: string;
-  notifyUsers?: string[];
 };
-
-export interface FormValues {
-  projectFlowName?: string;
-  activityName?: string;
-  description?: string;
-  color?: string | { toHexString?: () => string } | null | undefined;
-  assignedUsers?: string[];
-  deadline?: string;
-  approvalCriteria?: string;
-  priority?: string;
-  notifyUsers?: string[];
-}
