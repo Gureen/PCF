@@ -32,42 +32,83 @@ export const enLanguage = {
       LABEL: 'Color',
     },
     DEADLINE: {
-      LABEL: 'Approval criteria',
-      TOOLTIP: 'Define what is required for this activity to be approved.',
+      LABEL: 'Deadline',
+      TOOLTIP: 'Set a deadline for this activity',
       PLACEHOLDER: 'Select a deadline',
     },
     APPROVAL_CRITERIA: {
-      LABEL: 'Deadline',
-      TOOLTIP: 'Set a deadline for this activity',
+      LABEL: 'Approval criteria',
+      TOOLTIP: 'Define what is required for this activity to be approved.',
       PLACEHOLDER: 'E.g., Requires manager approval for amounts over $1000.',
     },
     USERS: {
       LABEL: 'Assigned users',
       PLACEHOLDER: 'Select users',
       ERROR_MESSAGE: 'Required',
-      OPTIONS: [
-        { value: 'John Doe', label: 'John Doe' },
-        { value: 'Jane Smith', label: 'Jane Smith' },
-        { value: 'Robert Johnson', label: 'Robert Johnson' },
-      ],
     },
     BUTTON: {
-      ADD_ACITIVTY: 'Add ',
-      RESET_FORM: 'Reset',
+      ADD_ACITIVTY: 'New',
+      RESET_FORM: 'Clear',
       CANCEL: 'Cancel',
       UPDATE: 'Update',
     },
   },
+  PROCESS_FLOW: {
+    TITLE: 'Saved process flows',
+    TOOLTIP: 'Load, edit, or export your previously configured process flows.',
+    SEARCH_PLACEHOLDER: 'Search by project name',
+    PAGINATION_TOTAL: (total: number) => `Total ${total} items`,
+    IMPORT_MODAL: {
+      TITLE: 'Import Process Flow',
+      DESCRIPTION: 'Are you sure you want to import the flow',
+      UNSAVED_CHANGES_WARNING: 'Warning: You have unsaved changes',
+      SUCCESS: 'Process flow imported successfully',
+      ERROR: 'Failed to import process flow',
+      CONFIRM: 'Import',
+      CANCEL: 'Cancel',
+      SELECT_FILE: 'Please select a file to import',
+      IMPORT_CONFIRMATION: 'Ready to import process flow',
+      READY_TO_IMPORT: 'Ready to import',
+      LAST_MODIFIED: 'Last modified',
+      DISCARD_WARNING:
+        'Importing this flow will discard your current unsaved changes.',
+      ADDITIONAL_INSTRUCTIONS:
+        'After importing, the process flow will be available in your saved flows list.',
+      NO_FILE_SELECTED: 'No file selected',
+      FILE_DETAILS: 'File details',
+      IMPORT_SUCCESS: 'Flow imported successfully!',
+      UPDATED_SUCCESS: 'Flow updated successfully!',
+      LOADING: 'Processing file...',
+    },
+    WARNING_MODAL: {
+      TITLE: 'Unsaved Changes',
+      ALERT_TITLE: 'Warning: Unsaved Changes',
+      DESCRIPTION_1: 'You have unsaved changes to',
+      DESCRIPTION_2: 'If you load',
+      DESCRIPTION_3: ', your current changes will be lost.',
+      ANOTHER_FLOW: 'another flow',
+      CONFIRMATION_QUESTION:
+        'Do you want to discard your changes and continue?',
+      CONFIRM: 'Discard Changes and Load',
+      CANCEL: 'Cancel',
+    },
+    DELETE_CONFIRM: {
+      TITLE: 'Delete this process flow?',
+      DESCRIPTION: 'Are you sure you want to delete this process flow?',
+      OK: 'Yes',
+      CANCEL: 'No',
+    },
+    COLUMN: {
+      PROJECT_NAME: 'Project Name',
+      CREATED: 'Created',
+      LAST_MODIFIED: 'Last Modified',
+      ACTIONS: 'Actions',
+    },
+    ACTION: {
+      LOAD: 'Load',
+      EXPORT: 'Export as JSON',
+      DELETE: 'Delete',
+      IMPORT: 'Import',
+    },
+  },
 };
-
-export const PRIORITY_OPTIONS = [
-  { value: 'high', label: 'High' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'low', label: 'Low' },
-];
-
-export const USER_OPTIONS = [
-  { value: 'john.doe', label: 'John Doe (Project Manager)' },
-  { value: 'jane.smith', label: 'Jane Smith (Developer)' },
-  { value: 'sarah.williams', label: 'Sarah Williams (QA)' },
-];

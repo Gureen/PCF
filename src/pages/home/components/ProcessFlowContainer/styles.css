@@ -1,13 +1,34 @@
-.process-flow-title {
-  font-size: 18px;
-}
-
-.full-width {
+/* Import Modal Styles */
+.modal-content {
   width: 100%;
 }
 
-.search-input {
-  width: 250px;
+.file-icon {
+  font-size: 24px;
+  color: #1677ff;
+}
+
+.file-title {
+  font-size: 16px;
+}
+
+.tag-container {
+  margin-top: 4px;
+}
+
+.date-info {
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.empty-state {
+  width: 100%;
+  padding: 24px 0;
+}
+
+/* Original styles.css content */
+.full-width {
+  width: 100%;
 }
 
 .table-controls {
@@ -46,4 +67,16 @@
 .ant-table-thead > tr > th {
   background-color: #dbdbdb !important;
   color: #000000 !important;
+}
+
+.modal-content {
+  width: 100%;
+}
+
+.flow-name {
+  margin: 0 4px;
+}
+
+.warning-alert {
+  margin-bottom: 12px;
 }

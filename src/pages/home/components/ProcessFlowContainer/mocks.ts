@@ -1,22 +1,30 @@
 import type { SavedFlow } from '@/interfaces';
+import type { Dayjs } from 'dayjs';
 
-// Define priority and user options
-export const PRIORITY_OPTIONS = [
-  { value: 'high', label: 'High' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'low', label: 'Low' },
-];
+export type Activity = {
+  id: string;
+  activityName?: string;
+  description?: string;
+  inputs?: string[];
+  outputs?: string[];
+  color?: string;
+  assignedUsers?: string[];
+  isEmpty?: boolean;
+  position?: {
+    x: number;
+    y: number;
+  };
+  deadline?: Dayjs | string;
+  approvalCriteria?: string;
+};
 
-export const USER_OPTIONS = [
-  { value: 'john.doe', label: 'John Doe (Project Manager)' },
-  { value: 'jane.smith', label: 'Jane Smith (Developer)' },
-  { value: 'sarah.williams', label: 'Sarah Williams (QA Engineer)' },
-  { value: 'mike.johnson', label: 'Mike Johnson (Designer)' },
-  { value: 'alex.taylor', label: 'Alex Taylor (Content Manager)' },
-  { value: 'emma.davis', label: 'Emma Davis (Marketing Specialist)' },
-  { value: 'david.wilson', label: 'David Wilson (Legal Advisor)' },
-  { value: 'olivia.brown', label: 'Olivia Brown (Department Head)' },
-];
+export type SavedFlowType = {
+  id: string;
+  projectName: string;
+  createdAt: string;
+  lastModified: string;
+  activities: Activity[];
+};
 
 export const preloadedFlows: SavedFlow[] = [
   {
@@ -37,6 +45,7 @@ export const preloadedFlows: SavedFlow[] = [
         deadline: '2025-04-05',
         approvalCriteria:
           'All stakeholders must sign off on requirements document',
+        position: { x: 250, y: 100 },
       },
       {
         id: '9c5e1a7f-4b2d-48e3-a6c9-7f5e3d2b1a8c',
@@ -50,6 +59,7 @@ export const preloadedFlows: SavedFlow[] = [
         deadline: '2025-04-20',
         approvalCriteria:
           'Design must align with brand guidelines and pass accessibility review',
+        position: { x: 100, y: 250 },
       },
       {
         id: '2a7e9c5b-1f4d-43e8-b6a2-9d5f1e3c7b4a',
@@ -63,6 +73,7 @@ export const preloadedFlows: SavedFlow[] = [
         deadline: '2025-05-01',
         approvalCriteria:
           'Sprint plan must be approved by Product Owner and Development Manager',
+        position: { x: 400, y: 250 },
       },
     ],
   },
@@ -83,6 +94,7 @@ export const preloadedFlows: SavedFlow[] = [
         deadline: '2025-03-25',
         approvalCriteria:
           'Test plan must cover all functional and non-functional requirements',
+        position: { x: 250, y: 100 },
       },
       {
         id: '3b7c9e5a-2d1f-47b6-a3c7-9e5d2b1f4a8c',
@@ -95,6 +107,7 @@ export const preloadedFlows: SavedFlow[] = [
         deadline: '2025-04-05',
         approvalCriteria:
           'Test cases must cover 100% of user stories and acceptance criteria',
+        position: { x: 100, y: 250 },
       },
       {
         id: '9c5e3b7a-1d2f-48c6-b9c5-e3b7a1d2f4c8',
@@ -107,6 +120,7 @@ export const preloadedFlows: SavedFlow[] = [
         deadline: '2025-04-10',
         approvalCriteria:
           'Environment must mirror production and include all integrations',
+        position: { x: 400, y: 250 },
       },
       {
         id: '5b9c7e3a-1f2d-47b6-a5b9-c7e3a1f2d4b6',
@@ -119,6 +133,7 @@ export const preloadedFlows: SavedFlow[] = [
         deadline: '2025-04-25',
         approvalCriteria:
           '95% of test cases must pass with no critical issues remaining',
+        position: { x: 250, y: 400 },
       },
       {
         id: '1f3d5b7c-9e2a-48d6-b1f3-d5b7c9e2a4d6',
@@ -135,6 +150,7 @@ export const preloadedFlows: SavedFlow[] = [
         deadline: '2025-05-05',
         approvalCriteria:
           'Test report must be signed off by QA Manager and Project Manager',
+        position: { x: 250, y: 550 },
       },
     ],
   },
@@ -155,6 +171,7 @@ export const preloadedFlows: SavedFlow[] = [
         deadline: '2025-03-20',
         approvalCriteria:
           'Request must include all required documentation and approvals',
+        position: { x: 250, y: 100 },
       },
       {
         id: '3o5q7s9u-1w3y-47a5-b3o5-q7s9u1w3y5a7',
@@ -167,6 +184,7 @@ export const preloadedFlows: SavedFlow[] = [
         deadline: '2025-03-25',
         approvalCriteria:
           'Request must be complete and valid according to department guidelines',
+        position: { x: 250, y: 250 },
       },
       {
         id: '7s9u1w3y-5a7c-47e9-b7s9-u1w3y5a7c9e1',
@@ -179,6 +197,7 @@ export const preloadedFlows: SavedFlow[] = [
         deadline: '2025-04-05',
         approvalCriteria:
           'Content must address all request requirements and follow guidelines',
+        position: { x: 100, y: 400 },
       },
       {
         id: '1w3y5a7c-9e1g-47i3-b1w3-y5a7c9e1g3i5',
@@ -191,6 +210,7 @@ export const preloadedFlows: SavedFlow[] = [
         deadline: '2025-04-15',
         approvalCriteria:
           'Content must meet quality standards and comply with policies',
+        position: { x: 400, y: 400 },
       },
       {
         id: '5a7c9e1g-3i5k-47m7-b5a7-c9e1g3i5k7m9',
@@ -203,34 +223,8 @@ export const preloadedFlows: SavedFlow[] = [
         deadline: '2025-04-25',
         approvalCriteria:
           'Request must receive majority approval from committee members',
+        position: { x: 250, y: 550 },
       },
     ],
   },
 ];
-
-// Updated Activity type definition to include the new fields
-export type Activity = {
-  id: string;
-  activityName?: string;
-  description?: string;
-  inputs?: string[];
-  outputs?: string[];
-  color?: string;
-  assignedUsers?: string[];
-  isEmpty?: boolean;
-  position?: {
-    x: number;
-    y: number;
-  };
-  deadline?: string;
-  approvalCriteria?: string;
-};
-
-// Type definition for SavedFlow if needed
-export type SavedFlowType = {
-  id: string;
-  projectName: string;
-  createdAt: string;
-  lastModified: string;
-  activities: Activity[];
-};

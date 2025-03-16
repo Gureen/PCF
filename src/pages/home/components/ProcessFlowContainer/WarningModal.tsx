@@ -1,4 +1,9 @@
-import { Modal } from 'antd';
+import { enLanguage } from '@/language/english';
+import { WarningOutlined } from '@ant-design/icons';
+import { Alert, Modal, Space, Typography } from 'antd';
+import './styles.css';
+
+const { Text } = Typography;
 
 interface WarningModalProps {
   isConfirmModalOpen: boolean;
@@ -19,9 +24,12 @@ export const WarningModal = ({
   proceedWithLoad,
   setIsConfirmModalOpen,
 }: WarningModalProps) => {
+  const targetFlowName = pendingLoadId
+    ? getFlowNameById(pendingLoadId)
+    : 'another flow';
+
   return (
     <Modal
-      title="Unsaved Changes"
       open={isConfirmModalOpen}
       onOk={() => {
         if (pendingLoadId) {
@@ -30,15 +38,43 @@ export const WarningModal = ({
         setIsConfirmModalOpen(false);
       }}
       onCancel={cancelLoad}
-      okText="Discard Changes and Load"
-      cancelText="Cancel"
+      okText={enLanguage.PROCESS_FLOW.WARNING_MODAL.CONFIRM}
+      cancelText={enLanguage.PROCESS_FLOW.WARNING_MODAL.CANCEL}
+      okButtonProps={{
+        danger: true,
+        icon: <WarningOutlined />,
+      }}
+      width={450}
+      centered
+      closable={false}
+      maskClosable={false}
     >
-      <p>
-        You have unsaved changes to "{currentFlowName}". If you load{' '}
-        {pendingLoadId ? `"${getFlowNameById(pendingLoadId)}"` : 'another flow'}
-        , your current changes will be lost.
-      </p>
-      <p>Do you want to discard your changes and continue?</p>
+      <Space direction="vertical" className="modal-content">
+        <Alert
+          message={enLanguage.PROCESS_FLOW.WARNING_MODAL.ALERT_TITLE}
+          description={
+            <Space direction="vertical">
+              <Text>
+                {enLanguage.PROCESS_FLOW.WARNING_MODAL.DESCRIPTION_1}
+                <Text strong className="flow-name">
+                  "{currentFlowName}"
+                </Text>
+                {enLanguage.PROCESS_FLOW.WARNING_MODAL.DESCRIPTION_2}
+                <Text strong className="flow-name">
+                  {pendingLoadId
+                    ? `"${targetFlowName}"`
+                    : enLanguage.PROCESS_FLOW.WARNING_MODAL.ANOTHER_FLOW}
+                </Text>
+                {enLanguage.PROCESS_FLOW.WARNING_MODAL.DESCRIPTION_3}
+              </Text>
+            </Space>
+          }
+          type="warning"
+          showIcon
+          icon={<WarningOutlined />}
+          className="warning-alert"
+        />
+      </Space>
     </Modal>
   );
 };

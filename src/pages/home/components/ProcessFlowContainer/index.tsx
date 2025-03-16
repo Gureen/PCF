@@ -3,11 +3,12 @@ import type { SavedFlow } from '@/interfaces';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Divider, Tooltip, message } from 'antd';
 import { useEffect, useState } from 'react';
-import { ImportModal } from './ImportModal';
 import { ProcessFlowTable } from './ProcessFlowTable';
 import { WarningModal } from './WarningModal';
-import { PROCESS_FLOW_TEXT, paginationConfig } from './constants';
 import './styles.css';
+import { enLanguage } from '@/language/english';
+import { ImportModal } from './ImportModal';
+import { paginationConfig } from './constants';
 import {
   exportFlow,
   filterFlows,
@@ -31,37 +32,33 @@ export const ProcessFlowContainer = () => {
   const [searchText, setSearchText] = useState('');
   const [filteredData, setFilteredData] = useState<SavedFlow[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
-  const [pendingLoadId, setPendingLoadId] = useState<string | null>(null);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
+  const [loadModal, setLoadModal] = useState({
+    isOpen: false,
+    pendingId: null as string | null,
+  });
+
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [importedFlow, setImportedFlow] = useState<SavedFlow | null>(null);
 
   const combinedFlows = [...preloadedFlowsData, ...savedFlows];
 
-  const updateFilteredFlows = (flows: SavedFlow[], query: string) => {
-    const filtered = filterFlows(flows, query);
-    setFilteredData(filtered);
-  };
-
   const handleLoadFlow = (flowId: string) => {
     if (hasChanges) {
-      setPendingLoadId(flowId);
-      setIsConfirmModalOpen(true);
+      setLoadModal({ isOpen: true, pendingId: flowId });
       return;
     }
-
     proceedWithLoad(flowId);
   };
 
   const proceedWithLoad = (flowId: string) => {
     loadFlow(flowId);
     showInfoMessage(messageApi, 'The flow process has been loaded.');
-    setPendingLoadId(null);
+    setLoadModal({ isOpen: false, pendingId: null });
   };
 
   const cancelLoad = () => {
-    setPendingLoadId(null);
-    setIsConfirmModalOpen(false);
+    setLoadModal({ isOpen: false, pendingId: null });
   };
 
   const handleDeleteFlow = (record: SavedFlow) => {
@@ -82,14 +79,11 @@ export const ProcessFlowContainer = () => {
 
     try {
       const result = importFlow(importedFlow);
+      const message = result.isNew
+        ? 'Flow imported and saved successfully!'
+        : 'Flow imported and updated successfully!';
 
-      showSuccessMessage(
-        messageApi,
-        result.isNew
-          ? 'Flow imported and saved successfully!'
-          : 'Flow imported and updated successfully!',
-      );
-
+      showSuccessMessage(messageApi, message);
       setIsImportModalOpen(false);
       setImportedFlow(null);
     } catch (error) {
@@ -105,19 +99,15 @@ export const ProcessFlowContainer = () => {
   };
 
   useEffect(() => {
-    updateFilteredFlows(combinedFlows, searchText);
+    setFilteredData(filterFlows(combinedFlows, searchText));
   }, [searchText, savedFlows, preloadedFlowsData]);
 
   return (
     <>
       {contextHolder}
-      <Divider
-        orientation="left"
-        className="process-flow-divider"
-        style={{ borderColor: '#1677ff' }}
-      >
-        <span className="process-flow-title">{PROCESS_FLOW_TEXT.TITLE}</span>
-        <Tooltip title={PROCESS_FLOW_TEXT.TOOLTIP}>
+      <Divider orientation="left" style={{ borderColor: '#1677ff' }}>
+        <span>{enLanguage.PROCESS_FLOW.TITLE}</span>
+        <Tooltip title={enLanguage.PROCESS_FLOW.TOOLTIP}>
           <InfoCircleOutlined className="info-icon" />
         </Tooltip>
       </Divider>
@@ -137,10 +127,12 @@ export const ProcessFlowContainer = () => {
         cancelLoad={cancelLoad}
         currentFlowName={currentFlowName}
         getFlowNameById={getFlowName}
-        isConfirmModalOpen={isConfirmModalOpen}
-        pendingLoadId={pendingLoadId}
+        isConfirmModalOpen={loadModal.isOpen}
+        pendingLoadId={loadModal.pendingId}
         proceedWithLoad={proceedWithLoad}
-        setIsConfirmModalOpen={setIsConfirmModalOpen}
+        setIsConfirmModalOpen={(isOpen) =>
+          setLoadModal({ ...loadModal, isOpen })
+        }
       />
 
       <ImportModal
