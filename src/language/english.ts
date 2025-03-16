@@ -111,4 +111,25 @@ export const enLanguage = {
       IMPORT: 'Import',
     },
   },
+  ACTION_BUTTONS: {
+    SAVE_BUTTON: 'Save',
+    UPDATE_BUTTON: 'Update',
+    CLEAR_BUTTON: 'Clear',
+    NEW_BUTTON: 'New',
+    ADD_BUTTON: 'Add',
+    MESSAGES: {
+      NEW_FLOW_SUCCESS: 'Started new process flow',
+      PROCESS_CREATED: 'The process has been created.',
+      PROCESS_UPDATED: 'The process has been updated.',
+      VALIDATION: {
+        PROJECT_NAME_REQUIRED: 'Project flow name is required.',
+        TWO_ACTIVITIES_REQUIRED: 'At least two activities are required.',
+        CONNECTION_REQUIRED: 'Each activity must have at least one connection.',
+      },
+    },
+  },
+  ACTIVITY_TEMPLATES: {
+    TITLE: 'Activity Templates',
+    TOOLTIP: 'Drag and drop templates to create your project workflow',
+  },
 };

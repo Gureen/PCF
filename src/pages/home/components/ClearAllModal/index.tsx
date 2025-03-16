@@ -1,5 +1,9 @@
 import { useProcessFlow } from '@/context/hooks';
-import { Modal } from 'antd';
+import { ExclamationCircleFilled } from '@ant-design/icons';
+import { Button, Modal, Space, Typography } from 'antd';
+import './styles.css';
+
+const { Text, Title } = Typography;
 
 interface ClearAllModalProps {
   isModalOpen: boolean;
@@ -41,14 +45,54 @@ export const ClearAllModal = ({
 
   return (
     <Modal
-      title={title}
+      title={
+        <Space className="modal-title">
+          <ExclamationCircleFilled
+            className={
+              modalAction === 'clear'
+                ? 'warning-icon-red'
+                : 'warning-icon-yellow'
+            }
+          />
+          <Title level={5} className="modal-heading">
+            {title}
+          </Title>
+        </Space>
+      }
       open={isModalOpen}
-      onOk={handleOk}
       onCancel={handleCancel}
-      okText="Yes"
-      cancelText="No"
+      footer={[
+        <Button key="cancel" onClick={handleCancel}>
+          No
+        </Button>,
+        <Button
+          key="confirm"
+          type="primary"
+          danger={modalAction === 'clear'}
+          onClick={handleOk}
+          className={
+            modalAction === 'clear'
+              ? 'confirm-button-danger'
+              : 'confirm-button-warning'
+          }
+        >
+          Yes
+        </Button>,
+      ]}
+      className="warning-modal"
+      width={420}
+      maskClosable={false}
+      centered
     >
-      <p>{content}</p>
+      <div className="modal-content">
+        <Text
+          className={
+            modalAction === 'clear' ? 'warning-text-red' : 'warning-text-yellow'
+          }
+        >
+          {content}
+        </Text>
+      </div>
     </Modal>
   );
 };

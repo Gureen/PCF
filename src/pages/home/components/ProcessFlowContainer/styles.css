@@ -21,12 +21,19 @@
   margin-left: 8px;
 }
 
+.modern-table .ant-table-thead > tr > th {
+  background-color: #f7f9fc;
+  color: #516091;
+  font-weight: 600;
+  padding: 16px;
+  border-bottom: 1px solid #e6ebf5;
+}
+
 .empty-state {
   width: 100%;
   padding: 24px 0;
 }
 
-/* Original styles.css content */
 .full-width {
   width: 100%;
 }
@@ -64,11 +71,6 @@
   cursor: pointer;
 }
 
-.ant-table-thead > tr > th {
-  background-color: #dbdbdb !important;
-  color: #000000 !important;
-}
-
 .modal-content {
   width: 100%;
 }
@@ -79,4 +81,16 @@
 
 .warning-alert {
   margin-bottom: 12px;
+}
+
+.icon-primary {
+  color: #1677ff;
+}
+
+.icon-danger {
+  color: #ff4d4f;
+}
+
+.icon-neutral {
+  color: #8c8c8c;
 }

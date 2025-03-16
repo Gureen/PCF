@@ -214,7 +214,6 @@ export function PositionLoggerNode({
       open={hovered}
       placement="right"
       color="white"
-      overlayInnerStyle={{ color: 'rgba(0, 0, 0, 0.85)' }}
     >
       <div
         className={`activity-node ${selected ? 'selected' : ''}`}

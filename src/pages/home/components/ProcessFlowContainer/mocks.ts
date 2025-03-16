@@ -30,8 +30,8 @@ export const preloadedFlows: SavedFlow[] = [
   {
     id: '4e2d8c1a-6f57-49b3-ae85-7c9f2b3d1a0e',
     projectName: 'Product Development Workflow',
-    createdAt: '2025-03-05',
-    lastModified: '2025-03-08',
+    createdAt: '03-05-2025',
+    lastModified: '03-08-2025',
     activities: [
       {
         id: 'f5a3e7c9-2b8d-41e6-9f5a-3c7b8d2e1a4f',
@@ -80,8 +80,8 @@ export const preloadedFlows: SavedFlow[] = [
   {
     id: '5c8a2b1d-7e6f-49a3-bc5d-8f2a1c9b7e6d',
     projectName: 'Software Testing Workflow',
-    createdAt: '2025-03-01',
-    lastModified: '2025-03-09',
+    createdAt: '03-01-2025',
+    lastModified: '03-09-2025',
     activities: [
       {
         id: '7d9e5c2b-1a3f-48d6-b7c9-5e2d1a3f4b8c',
@@ -158,7 +158,7 @@ export const preloadedFlows: SavedFlow[] = [
     id: '5e7g9i1k-4f6h-49a0-b5e7-g9i1k4f6h8j0',
     projectName: 'Request Approval Workflow',
     createdAt: '2025-03-02',
-    lastModified: '2025-03-11',
+    lastModified: '03-11-2025',
     activities: [
       {
         id: '9k1m3o5q-7s9u-47w3-b9k1-m3o5q7s9u1w3',

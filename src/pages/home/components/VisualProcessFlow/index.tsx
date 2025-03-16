@@ -23,6 +23,7 @@ import { Button, Space, Tooltip, message } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import './styles.css';
 import type { MessageInstance } from 'antd/es/message/interface';
+import { EmptyFlowMessage } from './EmptyFlowMessage';
 import { calculateNodePositions } from './nodeUtils';
 import { edgeTypes, nodeTypes } from './types';
 import { generateEdgesFromActivities } from './utils';
@@ -624,10 +625,7 @@ export const VisualProcessFlow = () => {
             </Panel>
           </ReactFlow>
         ) : (
-          <div className="empty-flow-message">
-            Drag and drop activity templates here to start building your process
-            flow
-          </div>
+          <EmptyFlowMessage />
         )}
       </div>
     </div>

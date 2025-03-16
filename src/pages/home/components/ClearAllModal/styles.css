@@ -1,0 +1,72 @@
+/* ClearAllModal.css */
+
+.warning-modal .ant-modal-content {
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .warning-modal .ant-modal-header {
+    border-bottom: 1px solid #f0f0f0;
+    padding: 16px 24px;
+  }
+  
+  .modal-title {
+    display: flex;
+    align-items: center;
+  }
+  
+  .modal-heading {
+    margin: 0 !important;
+  }
+  
+  .warning-icon-red {
+    color: #ff4d4f;
+    font-size: 22px;
+    margin-right: 8px;
+  }
+  
+  .warning-icon-yellow {
+    color: #faad14;
+    font-size: 22px;
+    margin-right: 8px;
+  }
+  
+  .modal-content {
+    padding: 8px 0;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .warning-text-red {
+    color: #5c5c5c;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  .warning-text-yellow {
+    color: #5c5c5c;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  .confirm-button-danger {
+    background-color: #ff4d4f;
+    border-color: #ff4d4f;
+  }
+  
+  .confirm-button-danger:hover {
+    background-color: #ff7875;
+    border-color: #ff7875;
+  }
+  
+  .confirm-button-warning {
+    background-color: #1890ff;
+    border-color: #1890ff;
+  }
+  
+  .ant-modal-footer {
+    border-top: 1px solid #f0f0f0;
+    padding: 10px 16px;
+    text-align: right;
+  }

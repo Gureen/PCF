@@ -6,66 +6,56 @@ import { useEffect } from 'react';
 import { TemplateCard } from './TemplateCard';
 import { activityTemplates } from './mocks';
 import './styles.css';
+import { enLanguage } from '@/language/english';
 
 const { Title } = Typography;
 
-// Map to keep track of template usage counts
-const templateUsageCounts = new Map<string, number>();
+let templateUsageCounts: Record<string, number> = {};
 
-// Function to reset template counts
-export const resetTemplateCounts = () => {
-  templateUsageCounts.clear();
+export const resetTemplateCounts = (): void => {
+  templateUsageCounts = {};
 };
 
 export const ActivityTemplates = () => {
-  const { currentFlowId } = useProcessFlow();
-
-  // Reset template counts when current flow changes
-  useEffect(() => {
-    resetTemplateCounts();
-  }, [currentFlowId]);
+  const { currentFlowId, activities } = useProcessFlow();
 
   const handleDragStart = (
     e: React.DragEvent<HTMLDivElement>,
     template: Activity,
-  ) => {
-    // Increment usage count for this template type
-    const currentCount =
-      templateUsageCounts.get(template.activityName || '') || 0;
-    const newCount = currentCount + 1;
-    templateUsageCounts.set(template.activityName || '', newCount);
+  ): void => {
+    const count = (templateUsageCounts[template.activityName || ''] || 0) + 1;
+    templateUsageCounts[template.activityName || ''] = count;
 
-    // Create a clone of the template with a new unique ID
-    const uniqueId = `${template.id}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-
-    // Add a counter to the activity name if this is not the first instance
-    let activityName = template.activityName;
-    if (newCount > 1) {
-      activityName = `${template.activityName} (${newCount})`;
-    }
-
-    const templateWithUniqueId = {
+    const newActivity: Activity = {
       ...template,
-      id: uniqueId,
-      activityName: activityName,
+      id: crypto.randomUUID(),
+      activityName:
+        count > 1
+          ? `${template.activityName} (${count})`
+          : template.activityName,
     };
 
-    e.dataTransfer.setData(
-      'application/json',
-      JSON.stringify(templateWithUniqueId),
-    );
+    e.dataTransfer.setData('application/json', JSON.stringify(newActivity));
     e.dataTransfer.effectAllowed = 'copy';
   };
+
+  useEffect(() => {
+    resetTemplateCounts();
+  }, [currentFlowId]);
+
+  useEffect(() => {
+    if (activities.length === 0) {
+      resetTemplateCounts();
+    }
+  }, [activities]);
 
   return (
     <>
       <div>
         <Title level={5}>
-          Activity Templates
-          <Tooltip title="Drag and drop templates to create your project workflow">
-            <InfoCircleOutlined
-              style={{ marginLeft: 8, fontSize: 16, color: '#1677ff' }}
-            />
+          {enLanguage.ACTIVITY_TEMPLATES.TITLE}
+          <Tooltip title={enLanguage.ACTIVITY_TEMPLATES.TOOLTIP}>
+            <InfoCircleOutlined className="icon" />
           </Tooltip>
         </Title>
       </div>
@@ -74,7 +64,7 @@ export const ActivityTemplates = () => {
           <TemplateCard
             key={template.id}
             template={template}
-            handleDragStart={handleDragStart}
+            handleDragStart={(e) => handleDragStart(e, template)}
           />
         ))}
       </div>

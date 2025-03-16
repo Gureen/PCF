@@ -1,10 +1,10 @@
 import { Button, type FormInstance, message } from 'antd';
 import { useState } from 'react';
 import { ClearAllModal } from '../ClearAllModal';
-import { ActionButtonsText } from './constants';
 import './styles.css';
 import { useProcessFlow } from '@/context/hooks';
 import type { Activity } from '@/interfaces';
+import { enLanguage } from '@/language/english';
 import { ClearOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import type { FormValues } from '../ProcessFlowForm/types';
 import { generateEdgesFromActivities } from '../VisualProcessFlow/utils';
@@ -34,10 +34,8 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
   };
 
   const handleClearClick = () => {
-    if (activities && activities.length > 0 && hasChanges) {
+    if (activities && activities.length > 0) {
       showModal('clear');
-    } else if (activities && activities.length > 0) {
-      clearActivities();
     }
   };
 
@@ -70,49 +68,44 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
   };
 
   const validateAtLeastOneConnection = (activities: Activity[]) => {
-    // If there are fewer than 2 activities, we can't validate connections
     if (!activities || activities.length < 2) {
       return false;
     }
 
     const edges = generateEdgesFromActivities(activities);
 
-    // If no edges were generated, it means no connections exist
     if (edges.length === 0) {
       return false;
     }
 
-    // Collect all unique node IDs involved in edges
     const connectedNodeIds = new Set(
       edges.flatMap((edge) => [edge.source, edge.target]),
     );
 
-    // Check if all activity IDs are in the connected nodes set
     const allNodesConnected = activities.every((activity) =>
       connectedNodeIds.has(activity.id),
     );
 
     return allNodesConnected;
   };
-  // Separate validation functions to reduce complexity
   const validateProjectName = (projectFlowName: string) => {
     if (!projectFlowName || projectFlowName.trim() === '') {
-      return 'Project flow name is required.';
+      return enLanguage.ACTION_BUTTONS.MESSAGES.VALIDATION
+        .PROJECT_NAME_REQUIRED;
     }
     return null;
   };
 
   const validateActivities = (activities: Activity[]) => {
     if (!activities || activities.length === 0 || activities.length === 1) {
-      return 'At least two activities are required.';
+      return enLanguage.ACTION_BUTTONS.MESSAGES.VALIDATION
+        .TWO_ACTIVITIES_REQUIRED;
     }
 
     return null;
   };
 
-  // Display each error as a separate message toast
   const displayValidationErrors = (errors: string[]) => {
-    // Using setTimeout to stagger the messages slightly for better visibility
     errors.forEach((error, index) => {
       messageApi.warning({
         content: error,
@@ -122,12 +115,10 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
     });
   };
 
-  // Main save function with reduced complexity
   const handleSaveClick = () => {
     const projectFlowName = form.getFieldValue('projectFlowName');
     const validationErrors = [];
 
-    // Collect all validation errors
     const nameError = validateProjectName(projectFlowName);
     if (nameError) {
       validationErrors.push(nameError);
@@ -137,7 +128,9 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
     if (activitiesError) {
       validationErrors.push(activitiesError);
     } else if (!validateAtLeastOneConnection(activities)) {
-      validationErrors.push('Each activity must have at least one connection.');
+      validationErrors.push(
+        enLanguage.ACTION_BUTTONS.MESSAGES.VALIDATION.CONNECTION_REQUIRED,
+      );
     }
 
     if (validationErrors.length > 0) {
@@ -153,16 +146,14 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
 
     if (result.isNew) {
       messageApi.success({
-        content: 'The process has been created.',
+        content: enLanguage.ACTION_BUTTONS.MESSAGES.PROCESS_CREATED,
       });
     } else if (result.isUpdated) {
       messageApi.info({
-        content: 'The process has been updated.',
+        content: enLanguage.ACTION_BUTTONS.MESSAGES.PROCESS_UPDATED,
       });
     }
 
-    // After saving, the hasChanges flag should be reset
-    // This is handled in the saveFlow function, but we can add a check here if needed
     if (form.getFieldValue('projectFlowName') !== projectFlowName) {
       form.setFieldsValue({ projectFlowName });
     }
@@ -175,8 +166,8 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
     <div className="action-buttons">
       {contextHolder}
       <Button type="primary" onClick={handleNewClick}>
-        <PlusOutlined style={{ fontSize: '18px' }} />
-        {ActionButtonsText.NEW_BUTTON}
+        <PlusOutlined className="button-style" />
+        {enLanguage.ACTION_BUTTONS.NEW_BUTTON}
       </Button>
       <Button
         onClick={handleSaveClick}
@@ -184,12 +175,14 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
         color="green"
         variant="solid"
       >
-        <SaveOutlined style={{ fontSize: '18px' }} />
-        {currentFlowId ? 'Update' : 'Add'}
+        <SaveOutlined className="button-style" />
+        {currentFlowId
+          ? enLanguage.ACTION_BUTTONS.UPDATE_BUTTON
+          : enLanguage.ACTION_BUTTONS.ADD_BUTTON}
       </Button>
       <Button danger onClick={handleClearClick} disabled={isButtonDisabled}>
-        <ClearOutlined style={{ fontSize: '18px' }} />
-        {ActionButtonsText.CLEAR_BUTTON}
+        <ClearOutlined className="button-style" />
+        {enLanguage.ACTION_BUTTONS.CLEAR_BUTTON}
       </Button>
       <ClearAllModal
         isModalOpen={isModalOpen}

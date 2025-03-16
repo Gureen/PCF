@@ -1,6 +1,8 @@
 import type { SavedFlow } from '@/interfaces';
 import { enLanguage } from '@/language/english';
 import {
+  CalendarOutlined,
+  ClockCircleOutlined,
   DeleteOutlined,
   EditOutlined,
   ExportOutlined,
@@ -61,6 +63,7 @@ export const ProcessFlowTable = ({
         </Upload>
       </Space>
       <Table
+        className="modern-table"
         dataSource={data}
         pagination={{
           ...paginationConfig,
@@ -80,12 +83,24 @@ export const ProcessFlowTable = ({
           dataIndex="createdAt"
           key="createdAt"
           width="20%"
+          render={(text) => (
+            <Space>
+              <CalendarOutlined className="icon-neutral" />
+              <span>{text}</span>
+            </Space>
+          )}
         />
 
         <Table.Column
           title={enLanguage.PROCESS_FLOW.COLUMN.LAST_MODIFIED}
           dataIndex="lastModified"
           key="lastModified"
+          render={(text) => (
+            <Space>
+              <ClockCircleOutlined style={{ color: '#8c8c8c' }} />
+              <span>{text}</span>
+            </Space>
+          )}
         />
         <Table.Column
           title={enLanguage.PROCESS_FLOW.COLUMN.ACTIONS}
@@ -97,14 +112,14 @@ export const ProcessFlowTable = ({
                 <Tooltip title={enLanguage.PROCESS_FLOW.ACTION.LOAD}>
                   <Button
                     type="text"
-                    icon={<EditOutlined />}
+                    icon={<EditOutlined className="icon-primary" />}
                     onClick={() => onLoad(record.id)}
                   />
                 </Tooltip>
                 <Tooltip title={enLanguage.PROCESS_FLOW.ACTION.EXPORT}>
                   <Button
                     type="text"
-                    icon={<ExportOutlined />}
+                    icon={<ExportOutlined className="icon-primary" />}
                     onClick={() => onExport(record)}
                   />
                 </Tooltip>
@@ -121,7 +136,7 @@ export const ProcessFlowTable = ({
                     <Button
                       type="text"
                       danger
-                      icon={<DeleteOutlined style={{ color: '#ff4d4f' }} />}
+                      icon={<DeleteOutlined className="icon-danger" />}
                     />
                   </Popconfirm>
                 </Tooltip>

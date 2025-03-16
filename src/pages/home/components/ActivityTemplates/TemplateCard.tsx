@@ -23,8 +23,9 @@ export const TemplateCard = ({
       onDragStart={(e) => handleDragStart(e, template)}
       style={{
         borderLeft: `4px solid ${template.color}`,
+        borderBottom: `4px solid ${template.color}`,
         height: '100%',
-        minWidth: '160px',
+        minWidth: '190px',
       }}
     >
       <Title level={5} className="title">
