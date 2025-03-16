@@ -20,20 +20,41 @@ export const getColorValue = (
   return DEFAULT_COLOR;
 };
 
+// export const createActivityObject = (
+//   values: FormValues,
+//   isEditing: boolean,
+//   currentActivity: Activity | null,
+// ): Activity => {
+//   const activityId =
+//     isEditing && currentActivity ? currentActivity.id : Date.now().toString();
+
+//   const activity: Activity = {
+//     id: activityId,
+//     activityName: values.activityName,
+//     description: values.description,
+//     color: getColorValue(values.color),
+//     assignedUsers: values.assignedUsers || [],
+//   };
+
+//   return activity;
+// };
+
 export const createActivityObject = (
   values: FormValues,
   isEditing: boolean,
   currentActivity: Activity | null,
 ): Activity => {
   const activityId =
-    isEditing && currentActivity ? currentActivity.id : Date.now().toString();
+    isEditing && currentActivity ? currentActivity.id : crypto.randomUUID();
 
   const activity: Activity = {
     id: activityId,
     activityName: values.activityName,
     description: values.description,
+    assignedUsers: values.assignedUsers,
     color: getColorValue(values.color),
-    assignedUsers: values.assignedUsers || [],
+    deadline: values.deadline,
+    approvalCriteria: values.approvalCriteria,
   };
 
   return activity;

@@ -18,7 +18,9 @@ export const createNodeFromActivity = (
       inputs: activity.inputs,
       outputs: activity.outputs,
       assignedUsers: activity.assignedUsers,
-      color: activity.color || '#1677ff',
+      color: activity.color,
+      deadline: activity.deadline,
+      approvalCriteria: activity.approvalCriteria,
     },
     style: {
       backgroundColor: 'white',

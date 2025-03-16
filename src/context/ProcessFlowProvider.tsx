@@ -187,17 +187,13 @@ export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
       }
     }
 
-    // Reset hasChanges flag after successful save
     setHasChanges(false);
 
-    // Also update originalActivities to match current activities
-    // This ensures future comparisons correctly determine if changes were made
     setOriginalActivities([...activities]);
 
     return result;
   };
 
-  // Updated loadFlow function for ProcessFlowProvider
   const loadFlow = (flowId: string) => {
     const flow = findFlowById(allFlows, flowId);
 
@@ -209,7 +205,6 @@ export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
       setCurrentFlowName(flow.projectName);
       setCurrentFlowId(flowId);
 
-      // Explicitly reset the hasChanges flag when loading a flow
       setHasChanges(false);
     }
   };

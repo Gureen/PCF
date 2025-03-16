@@ -4,6 +4,10 @@ export type FieldType = {
   description?: string;
   color?: string;
   assignedUsers?: string[];
+  deadline?: string;
+  approvalCriteria?: string;
+  priority?: string;
+  notifyUsers?: string[];
 };
 
 export interface FormValues {
@@ -12,4 +16,8 @@ export interface FormValues {
   description?: string;
   color?: string | { toHexString?: () => string } | null | undefined;
   assignedUsers?: string[];
+  deadline?: string;
+  approvalCriteria?: string;
+  priority?: string;
+  notifyUsers?: string[];
 }

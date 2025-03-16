@@ -17,6 +17,9 @@ export type Activity = {
     x: number;
     y: number;
   };
+  deadline?: string;
+  approvalCriteria?: string;
+  notifyUsers?: string[];
 };
 
 export type SavedFlow = {

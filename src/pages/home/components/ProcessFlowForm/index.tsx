@@ -12,6 +12,7 @@ import {
   Card,
   Col,
   ColorPicker,
+  DatePicker,
   Form,
   type FormInstance,
   Input,
@@ -116,7 +117,6 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
   return (
     <>
       <Title level={2}>{ProcessFlowFormText.MAIN_TITLE}</Title>
-
       <Form
         form={form}
         name="processFlowForm"
@@ -143,6 +143,7 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
             <InfoCircleOutlined className="info-icon" />
           </Tooltip>
         </div>
+
         <Card>
           <Row gutter={[16, 16]}>
             <Col xs={24} sm={24} md={12}>
@@ -175,7 +176,8 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
           </Row>
 
           <Row gutter={[16, 16]}>
-            <Col xs={24} sm={12} md={12}>
+            {/* Second Row */}
+            <Col xs={24} sm={8} md={8}>
               <Form.Item<FieldType>
                 label={ProcessFlowFormText.ACTIVITIES.USERS.LABEL}
                 name="assignedUsers"
@@ -188,53 +190,113 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
                 />
               </Form.Item>
             </Col>
-            <Col xs={24} sm={12} md={12}>
-              <Form.Item label={ProcessFlowFormText.ACTIVITIES.COLOR.LABEL}>
-                <Row gutter={[8, 8]}>
-                  <Col xs={6} sm={4} md={4} lg={3}>
-                    <Form.Item<FieldType> name="color" noStyle>
-                      <ColorPicker size="middle" format="hex" />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={18} sm={20} md={20} lg={21}>
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'flex-end',
-                        flexWrap: 'wrap',
-                        gap: '8px',
-                      }}
-                    >
-                      <Button
-                        onClick={handleFormReset}
-                        icon={<UndoOutlined />}
-                        size="middle"
-                        danger
-                        style={{ borderColor: '#ff4d4f', color: '#ff4d4f' }}
-                      >
-                        Reset
-                      </Button>
-
-                      {isEditing && (
-                        <Button
-                          onClick={handleCancelEditing}
-                          icon={<CloseOutlined />}
-                        >
-                          Cancel
-                        </Button>
-                      )}
-                      <Button
-                        htmlType="submit"
-                        icon={isEditing ? <SaveOutlined /> : <PlusOutlined />}
-                        size="middle"
-                        type="primary"
-                      >
-                        {renderButtonText}
-                      </Button>
-                    </div>
-                  </Col>
-                </Row>
+            <Col xs={24} sm={8} md={8}>
+              <Form.Item<FieldType>
+                label="Deadline"
+                name="deadline"
+                tooltip="Set a deadline for this activity"
+              >
+                <DatePicker
+                  placeholder="Select deadline date"
+                  style={{ width: '100%' }}
+                  format="YYYY-MM-DD"
+                />
               </Form.Item>
+            </Col>
+            <Col xs={24} sm={8} md={8}>
+              <Form.Item
+                name="color"
+                label={ProcessFlowFormText.ACTIVITIES.COLOR.LABEL}
+              >
+                <ColorPicker size="middle" format="hex" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          {/* Third Row - Added for approval criteria */}
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12} md={12}>
+              <Form.Item<FieldType>
+                label="Approval Criteria"
+                name="approvalCriteria"
+                tooltip="Define what is required for this activity to be approved"
+              >
+                <TextArea
+                  placeholder="E.g., Requires manager approval for amounts over $1000"
+                  rows={2}
+                />
+              </Form.Item>
+            </Col>
+            {/* <Col xs={24} sm={12} md={12}>
+              <Form.Item<FieldType>
+                label="Priority"
+                name="priority"
+                tooltip="Set the priority level for this activity"
+              >
+                <Select
+                  placeholder="Select priority"
+                  options={PRIORITY_OPTIONS}
+                  style={{ width: '100%' }}
+                />
+              </Form.Item>
+            </Col> */}
+          </Row>
+
+          {/* Fourth Row - Notification settings */}
+          {/* <Row gutter={[16, 16]}>
+            <Col xs={24}>
+              <Form.Item<FieldType>
+                label="Notify Users"
+                name="notifyUsers"
+                tooltip="Select users who should be notified about this activity"
+              >
+                <Select
+                  mode="multiple"
+                  placeholder="Select users to notify"
+                  style={{ width: '100%' }}
+                  options={USER_OPTIONS}
+                />
+              </Form.Item>
+            </Col>
+          </Row> */}
+
+          {/* Buttons Row */}
+          <Row>
+            <Col xs={24}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '8px',
+                }}
+              >
+                <Button
+                  onClick={handleFormReset}
+                  icon={<UndoOutlined />}
+                  size="middle"
+                  danger
+                  style={{ borderColor: '#ff4d4f', color: '#ff4d4f' }}
+                >
+                  Reset
+                </Button>
+
+                {isEditing && (
+                  <Button
+                    onClick={handleCancelEditing}
+                    icon={<CloseOutlined />}
+                  >
+                    Cancel
+                  </Button>
+                )}
+                <Button
+                  htmlType="submit"
+                  icon={isEditing ? <SaveOutlined /> : <PlusOutlined />}
+                  size="middle"
+                  type="primary"
+                >
+                  {renderButtonText}
+                </Button>
+              </div>
             </Col>
           </Row>
         </Card>

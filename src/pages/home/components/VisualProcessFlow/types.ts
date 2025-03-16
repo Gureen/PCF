@@ -9,6 +9,10 @@ export type PositionLoggerNodeData = Node<
     outputs?: string[];
     assignedUsers?: string[];
     color?: string;
+    deadline?: string;
+    approvalCriteria?: string;
+    priority?: string;
+    notifyUsers?: string[];
   },
   'position-logger'
 >;

@@ -10,9 +10,11 @@ export const applyActivityDefaults = (activity: Activity): Activity => {
     description: activity.description || '',
     inputs: activity.inputs || [],
     outputs: activity.outputs || [],
-    color: activity.color || '#1677ff',
+    color: activity.color,
     assignedUsers: activity.assignedUsers || [],
     position: activity.position || undefined,
+    deadline: activity.deadline || undefined,
+    approvalCriteria: activity.approvalCriteria || '',
   };
 };
 

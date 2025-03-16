@@ -1,4 +1,8 @@
-import { UserOutlined } from '@ant-design/icons';
+import {
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import { Avatar, Tooltip } from 'antd';
 import { useState } from 'react';
@@ -14,6 +18,41 @@ export function PositionLoggerNode({
   const hasAssignedUsers = Boolean(data.assignedUsers?.length);
   const hasInputs = Boolean(data.inputs?.length);
   const hasOutputs = Boolean(data.outputs?.length);
+  const hasDeadline = Boolean(data.deadline);
+  const hasApprovalCriteria = Boolean(data.approvalCriteria);
+
+  const formatDeadlineDate = (dateString?: string) => {
+    if (!dateString) {
+      return '';
+    }
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
+  const getDeadlineStatus = () => {
+    if (!data.deadline) {
+      return null;
+    }
+
+    const deadlineDate = new Date(data.deadline);
+    const today = new Date();
+    const diffTime = deadlineDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) {
+      return 'passed';
+    }
+    if (diffDays <= 2) {
+      return 'approaching';
+    }
+    return 'normal';
+  };
+
+  const deadlineStatus = getDeadlineStatus();
 
   const tooltipContent = (
     <div
@@ -114,6 +153,58 @@ export function PositionLoggerNode({
           </div>
         </div>
       )}
+
+      {hasDeadline && (
+        <div className="tooltip-section" style={{ marginTop: '10px' }}>
+          <strong style={{ color: '#fa8c16' }}>Deadline:</strong>
+          <div
+            className="tooltip-deadline"
+            style={{
+              backgroundColor: '#fff7e6',
+              padding: '6px',
+              borderRadius: '4px',
+              borderLeft: '3px solid #fa8c16',
+              marginTop: '4px',
+              color:
+                deadlineStatus === 'passed'
+                  ? '#f5222d'
+                  : deadlineStatus === 'approaching'
+                    ? '#fa8c16'
+                    : '#595959',
+            }}
+          >
+            <ClockCircleOutlined style={{ marginRight: 4 }} />
+            {formatDeadlineDate(data?.deadline)}
+            {deadlineStatus === 'passed' && (
+              <span style={{ color: '#f5222d', marginLeft: 6 }}>(Overdue)</span>
+            )}
+            {deadlineStatus === 'approaching' && (
+              <span style={{ color: '#fa8c16', marginLeft: 6 }}>
+                (Approaching)
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
+      {hasApprovalCriteria && (
+        <div className="tooltip-section" style={{ marginTop: '10px' }}>
+          <strong style={{ color: '#13c2c2' }}>Approval Criteria:</strong>
+          <div
+            className="tooltip-approval"
+            style={{
+              backgroundColor: '#e6fffb',
+              padding: '6px',
+              borderRadius: '4px',
+              borderLeft: '3px solid #13c2c2',
+              marginTop: '4px',
+            }}
+          >
+            <CheckCircleOutlined style={{ marginRight: 4 }} />
+            {data.approvalCriteria}
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -127,13 +218,13 @@ export function PositionLoggerNode({
     >
       <div
         className={`activity-node ${selected ? 'selected' : ''}`}
-        style={{ borderLeft: `4px solid ${data.color || '#1677ff'}` }}
+        style={{ borderLeft: `4px solid ${data.color}` }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
         <div
           className="activity-node-header"
-          style={{ color: data.color || '#1677ff', fontWeight: 600 }}
+          style={{ color: data.color, fontWeight: 600 }}
         >
           {data.label}
         </div>
@@ -155,12 +246,12 @@ export function PositionLoggerNode({
         <Handle
           type="target"
           position={Position.Top}
-          style={{ background: data.color || '#1677ff', width: 8, height: 8 }}
+          style={{ background: data.color, width: 8, height: 8 }}
         />
         <Handle
           type="source"
           position={Position.Bottom}
-          style={{ background: data.color || '#1677ff', width: 8, height: 8 }}
+          style={{ background: data.color, width: 8, height: 8 }}
         />
       </div>
     </Tooltip>
