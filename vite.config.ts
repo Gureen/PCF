@@ -32,12 +32,12 @@ const pwaOptions: Partial<VitePWAOptions> = {
 
 export default defineConfig({
   plugins: [
-    reactRouter(),
     checker({
       typescript: true,
       biome: true,
     }),
     tsConfigPaths(),
+    reactRouter(),
     visualizer({ template: "sunburst" }) as unknown as PluginOption,
     VitePWA(pwaOptions),
   ],
