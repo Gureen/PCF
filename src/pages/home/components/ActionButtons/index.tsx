@@ -88,11 +88,7 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
    * Performs the appropriate action based on modalAction
    */
   const handleModalConfirm = () => {
-    if (modalAction === 'clear') {
-      clearActivities();
-    } else if (modalAction === 'new') {
-      createNewFlow();
-    }
+    createNewFlow();
     setIsModalOpen(false);
   };
 

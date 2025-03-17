@@ -5,6 +5,14 @@ import { ProcessFlowContainer } from './components/ProcessFlowContainer';
 import { ProcessFlowForm } from './components/ProcessFlowForm';
 import { VisualProcessFlow } from './components/VisualProcessFlow';
 
+/**
+ * Home page component that displays the process flow management interface
+ *
+ * Combines form controls, action buttons, templates, and visual representation
+ * of the process flow in a responsive two-column layout
+ *
+ * @returns Home page component
+ */
 const Home = () => {
   const [form] = Form.useForm();
 

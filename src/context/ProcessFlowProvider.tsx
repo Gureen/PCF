@@ -23,6 +23,15 @@ import {
   updateExistingFlow,
 } from './utils';
 
+/**
+ * Provider component that implements the ProcessFlow context
+ *
+ * Manages state and operations for activities, flows, and process management
+ * Makes process flow functionality available to all child components
+ *
+ * @param props - Component props
+ * @param props.children - Child components that will have access to the context
+ */
 export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [currentActivity, setCurrentActivity] = useState<Activity | null>(null);
@@ -37,10 +46,17 @@ export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
   const [originalActivities, setOriginalActivities] = useState<Activity[]>([]);
   const [hasChanges, setHasChanges] = useState<boolean>(false);
 
+  /**
+   * Updates the combined list of all flows (preloaded and user-saved)
+   */
   const updateAllFlows = () => {
     setAllFlows([...preloadedFlowsData, ...savedFlows]);
   };
 
+  /**
+   * Compares current activities with original state to detect changes
+   * Updates hasChanges flag accordingly
+   */
   const checkForChanges = () => {
     if (currentFlowId && originalActivities.length > 0) {
       const activitiesChanged = areActivitiesDifferent(
@@ -55,6 +71,11 @@ export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
     }
   };
 
+  /**
+   * Adds a new activity to the current flow
+   *
+   * @param activity - The activity to add
+   */
   const addActivity = (activity: Activity) => {
     const activityWithId = addIdToActivity(activity);
     const activityWithDefaults = applyActivityDefaults(activityWithId);
@@ -62,6 +83,11 @@ export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
     setActivities([...activities, activityWithDefaults]);
   };
 
+  /**
+   * Selects an activity for editing by its ID
+   *
+   * @param id - ID of the activity to edit
+   */
   const editActivity = (id: string) => {
     const activity = activities.find((a) => a.id === id);
 
@@ -72,6 +98,12 @@ export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
     }
   };
 
+  /**
+   * Updates an existing activity with new values
+   * Preserves connections if they exist
+   *
+   * @param updatedActivity - Activity with updated values
+   */
   const updateActivity = (updatedActivity: Activity) => {
     const existingActivity = activities.find(
       (a) => a.id === updatedActivity.id,
@@ -94,22 +126,40 @@ export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
     setIsEditing(false);
   };
 
+  /**
+   * Removes an activity from the current flow
+   *
+   * @param id - ID of the activity to delete
+   */
   const deleteActivity = (id: string) => {
     const filteredActivities = activities.filter((a) => a.id !== id);
     setActivities(filteredActivities);
   };
 
+  /**
+   * Removes all activities from the current flow and resets state
+   */
   const clearActivities = () => {
     setActivities([]);
     setOriginalActivities([]);
     setHasChanges(false);
   };
 
+  /**
+   * Cancels the current activity editing operation
+   */
   const cancelEditing = () => {
     setCurrentActivity(null);
     setIsEditing(false);
   };
 
+  /**
+   * Creates and saves a new flow with the provided data
+   *
+   * @param flowData - Data for the new flow
+   * @param currentDate - Current date for timestamps
+   * @returns Object indicating a new flow was created
+   */
   const saveNewFlow = (flowData: Partial<SavedFlow>, currentDate: string) => {
     const newFlow = createNewFlow(flowData, currentDate);
     setSavedFlows([...savedFlows, newFlow]);
@@ -118,6 +168,13 @@ export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
     return getNewFlowResult();
   };
 
+  /**
+   * Updates a preloaded flow with new data
+   *
+   * @param existingFlow - Original flow to update
+   * @param flowData - New data to apply
+   * @returns Object indicating if the flow was updated
+   */
   const updatePreloadedFlow = (
     existingFlow: SavedFlow,
     flowData: Partial<SavedFlow>,
@@ -140,6 +197,13 @@ export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
     return getUpdatedFlowResult();
   };
 
+  /**
+   * Updates a user-saved flow with new data
+   *
+   * @param existingFlow - Original flow to update
+   * @param flowData - New data to apply
+   * @returns Object indicating if the flow was updated
+   */
   const updateSavedFlow = (
     existingFlow: SavedFlow,
     flowData: Partial<SavedFlow>,
@@ -162,7 +226,13 @@ export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
     return getUpdatedFlowResult();
   };
 
-  // Updated saveFlow function for ProcessFlowProvider
+  /**
+   * Saves the current flow with the provided name
+   * Creates a new flow or updates existing one based on current state
+   *
+   * @param projectFlowName - Name to save the flow under
+   * @returns Object indicating if the flow is new or was updated
+   */
   const saveFlow = (projectFlowName: string) => {
     const flowData = prepareFlowData(projectFlowName, activities);
     const currentDate = getCurrentDateString();
@@ -194,6 +264,11 @@ export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
     return result;
   };
 
+  /**
+   * Loads a flow by its ID and sets it as the current flow
+   *
+   * @param flowId - ID of the flow to load
+   */
   const loadFlow = (flowId: string) => {
     const flow = findFlowById(allFlows, flowId);
 
@@ -209,6 +284,12 @@ export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
     }
   };
 
+  /**
+   * Deletes a flow by its ID
+   *
+   * @param flowId - ID of the flow to delete
+   * @returns Boolean indicating if the deletion was successful
+   */
   const deleteFlow = (flowId: string) => {
     const isPreloaded = isFlowInCollection(preloadedFlowsData, flowId);
 
@@ -228,6 +309,13 @@ export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
     return true;
   };
 
+  /**
+   * Imports a flow from an external source
+   * Either updates an existing flow with the same name or creates a new one
+   *
+   * @param flow - Flow data to import
+   * @returns Object indicating if the flow is new or was updated
+   */
   const importFlow = (flow: SavedFlow) => {
     const activitiesWithDefaults = flow.activities.map(applyActivityDefaults);
 
@@ -264,10 +352,12 @@ export const ProcessFlowProvider = ({ children }: ProcessFlowProviderProps) => {
     return saveNewFlow(flowData, currentDate);
   };
 
+  // Update allFlows when savedFlows or preloadedFlowsData change
   useEffect(() => {
     updateAllFlows();
   }, [savedFlows, preloadedFlowsData]);
 
+  // Check for changes when activities, originalActivities, or currentFlowId change
   useEffect(() => {
     checkForChanges();
   }, [activities, originalActivities, currentFlowId]);

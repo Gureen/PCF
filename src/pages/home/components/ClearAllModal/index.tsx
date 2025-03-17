@@ -63,7 +63,7 @@ export const ClearAllModal = ({
 
   const content =
     modalAction === 'clear'
-      ? 'Are you sure you want to clear all activities? This action cannot be undone.'
+      ? 'By clearing all activites you are essentially starting a new flow? This action cannot be undone.'
       : 'You have unsaved changes. Creating a new flow will discard these changes. Do you want to continue?';
 
   return (
