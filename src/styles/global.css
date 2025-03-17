@@ -1,3 +1,8 @@
+/**
+ * Global CSS styles for the application
+ */
+
+/** Base HTML and body styles */
 html,
 body {
   background-color: #cfdaf5;
@@ -7,15 +12,18 @@ body {
   overflow-x: hidden;
 }
 
+/** Ant Design row override for consistent spacing */
 .ant-row {
   margin: 5px 0 !important;
   padding: 0 10px;
 }
 
+/** Ant Design form item spacing override */
 .ant-form-item {
   margin-bottom: 8px !important;
 }
 
+/** Ant Design card padding override */
 .ant-card-body {
   padding: 16px !important;
 }

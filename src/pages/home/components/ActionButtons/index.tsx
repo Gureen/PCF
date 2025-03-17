@@ -9,10 +9,20 @@ import { ClearOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import type { FormValues } from '../ProcessFlowForm/types';
 import { generateEdgesFromActivities } from '../VisualProcessFlow/utils';
 
+/**
+ * Props for the ActionButtons component
+ */
 interface ActionButtonsProps {
+  /** Form instance to access form values */
   form: FormInstance<FormValues>;
 }
 
+/**
+ * Component that provides action buttons for the process flow
+ * Handles creating, saving, and clearing flows
+ * @param form Form instance to access form values
+ * @returns React component with action buttons and confirmation modal
+ */
 export const ActionButtons = ({ form }: ActionButtonsProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
@@ -28,17 +38,29 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
     setCurrentFlowId,
   } = useProcessFlow();
 
+  /**
+   * Opens the confirmation modal with the specified action type
+   * @param action The type of action to confirm ('clear' or 'new')
+   */
   const showModal = (action: 'clear' | 'new') => {
     setModalAction(action);
     setIsModalOpen(true);
   };
 
+  /**
+   * Handles clicking the clear button
+   * Shows confirmation modal if there are activities to clear
+   */
   const handleClearClick = () => {
     if (activities && activities.length > 0) {
       showModal('clear');
     }
   };
 
+  /**
+   * Handles clicking the new flow button
+   * Shows confirmation modal if there are unsaved changes
+   */
   const handleNewClick = () => {
     if (hasChanges) {
       showModal('new');
@@ -47,6 +69,9 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
     }
   };
 
+  /**
+   * Creates a new flow by resetting the form and clearing activities
+   */
   const createNewFlow = () => {
     form.resetFields();
     clearActivities();
@@ -58,6 +83,10 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
     });
   };
 
+  /**
+   * Handles confirmation from the modal
+   * Performs the appropriate action based on modalAction
+   */
   const handleModalConfirm = () => {
     if (modalAction === 'clear') {
       clearActivities();
@@ -67,6 +96,11 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
     setIsModalOpen(false);
   };
 
+  /**
+   * Validates that at least one connection exists between activities
+   * @param activities Array of activities to validate
+   * @returns Boolean indicating whether all nodes are connected
+   */
   const validateAtLeastOneConnection = (activities: Activity[]) => {
     if (!activities || activities.length < 2) {
       return false;
@@ -88,6 +122,12 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
 
     return allNodesConnected;
   };
+
+  /**
+   * Validates the project name
+   * @param projectFlowName The project flow name to validate
+   * @returns Error message if validation fails, null if valid
+   */
   const validateProjectName = (projectFlowName: string) => {
     if (!projectFlowName || projectFlowName.trim() === '') {
       return enLanguage.ACTION_BUTTONS.MESSAGES.VALIDATION
@@ -96,6 +136,11 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
     return null;
   };
 
+  /**
+   * Validates that at least two activities exist
+   * @param activities Array of activities to validate
+   * @returns Error message if validation fails, null if valid
+   */
   const validateActivities = (activities: Activity[]) => {
     if (!activities || activities.length === 0 || activities.length === 1) {
       return enLanguage.ACTION_BUTTONS.MESSAGES.VALIDATION
@@ -105,6 +150,10 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
     return null;
   };
 
+  /**
+   * Displays validation error messages
+   * @param errors Array of error messages to display
+   */
   const displayValidationErrors = (errors: string[]) => {
     errors.forEach((error, index) => {
       messageApi.warning({
@@ -115,6 +164,10 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
     });
   };
 
+  /**
+   * Handles clicking the save button
+   * Validates form values and activities before saving
+   */
   const handleSaveClick = () => {
     const projectFlowName = form.getFieldValue('projectFlowName');
     const validationErrors = [];
@@ -141,6 +194,10 @@ export const ActionButtons = ({ form }: ActionButtonsProps) => {
     saveValidFlow(projectFlowName);
   };
 
+  /**
+   * Saves a valid flow and shows appropriate messages
+   * @param projectFlowName Name of the flow to save
+   */
   const saveValidFlow = (projectFlowName: string) => {
     const result = saveFlow(projectFlowName);
 

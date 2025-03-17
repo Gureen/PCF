@@ -1,5 +1,12 @@
+/**
+ * English language text constants for the application
+ * Centralizes all UI text to support localization and consistent messaging
+ */
 export const enLanguage = {
+  /** Main application title */
   MAIN_TITLE: 'Process flow configurator',
+
+  /** Project flow section text */
   PROJECT_FLOW: {
     LABEL: 'Project flow name',
     PLACEHOLDER: 'Enter process flow name.',
@@ -7,6 +14,8 @@ export const enLanguage = {
     TOOLTIP:
       'Add a maximum of 4 activities to the process flow. Each activity can be assigned to one or more users.',
   },
+
+  /** Activities configuration section text */
   ACTIVITIES: {
     TITLE: 'Activities configurator',
     TOOLTIP: '(Configure activity nodes)',
@@ -53,6 +62,8 @@ export const enLanguage = {
       UPDATE: 'Update',
     },
   },
+
+  /** Process flow management section text */
   PROCESS_FLOW: {
     TITLE: 'Saved process flows',
     TOOLTIP: 'Load, edit, or export your previously configured process flows.',
@@ -111,6 +122,8 @@ export const enLanguage = {
       IMPORT: 'Import',
     },
   },
+
+  /** Action buttons text */
   ACTION_BUTTONS: {
     SAVE_BUTTON: 'Save',
     UPDATE_BUTTON: 'Update',
@@ -128,6 +141,8 @@ export const enLanguage = {
       },
     },
   },
+
+  /** Activity templates section text */
   ACTIVITY_TEMPLATES: {
     TITLE: 'Activity Templates',
     TOOLTIP: 'Drag and drop templates to create your project workflow',

@@ -5,16 +5,38 @@ import './styles.css';
 
 const { Text } = Typography;
 
+/**
+ * Props for the WarningModal component
+ */
 interface WarningModalProps {
+  /** Whether the confirmation modal is currently visible */
   isConfirmModalOpen: boolean;
+  /** ID of the flow waiting to be loaded */
   pendingLoadId: string | null;
+  /** Name of the current flow that has unsaved changes */
   currentFlowName: string;
+  /** Function to proceed with loading the pending flow */
   proceedWithLoad: (id: string) => void;
+  /** Function to set the modal's visibility state */
   setIsConfirmModalOpen: (isOpen: boolean) => void;
+  /** Function to cancel the load operation */
   cancelLoad: () => void;
+  /** Function to get a flow name by its ID */
   getFlowNameById: (id: string) => string;
 }
 
+/**
+ * Modal component that warns about unsaved changes when loading a flow
+ * Asks for confirmation before discarding changes and loading a new flow
+ * @param cancelLoad Function to cancel the load operation
+ * @param currentFlowName Name of the current flow that has unsaved changes
+ * @param getFlowNameById Function to get a flow name by its ID
+ * @param isConfirmModalOpen Whether the confirmation modal is currently visible
+ * @param pendingLoadId ID of the flow waiting to be loaded
+ * @param proceedWithLoad Function to proceed with loading the pending flow
+ * @param setIsConfirmModalOpen Function to set the modal's visibility state
+ * @returns React component for the warning modal
+ */
 export const WarningModal = ({
   cancelLoad,
   currentFlowName,
@@ -24,6 +46,10 @@ export const WarningModal = ({
   proceedWithLoad,
   setIsConfirmModalOpen,
 }: WarningModalProps) => {
+  /**
+   * Gets the name of the flow being loaded
+   * Uses the flow ID to look up the name or falls back to "another flow"
+   */
   const targetFlowName = pendingLoadId
     ? getFlowNameById(pendingLoadId)
     : 'another flow';

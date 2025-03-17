@@ -1,5 +1,10 @@
 import { Link } from 'react-router';
 
+/**
+ * 404 page component for not found routes
+ * Displays a friendly error page with an image and link back to home
+ * @returns React component for the 404 error page
+ */
 const Page404 = () => {
   return (
     <div

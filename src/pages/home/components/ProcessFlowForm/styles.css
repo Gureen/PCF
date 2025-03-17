@@ -1,14 +1,23 @@
-.title-with-icon {
+/**
+ * CSS styles for process flow form components
+ */
+
+/**
+ * Style for the title with icon layout
+ * Used in ActivityHeader to display title with info icon
+ */
+ .title-with-icon {
   display: flex;
   align-items: baseline;
 }
 
+/**
+ * Style for the form button container
+ * Positions buttons at the end of the form with proper spacing
+ */
 .form-button {
   display:flex;
   justify-content: flex-end;
   margin-top: 16px;
   gap: 8px;
 }
-
-
-

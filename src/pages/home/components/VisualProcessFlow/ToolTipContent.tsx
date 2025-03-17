@@ -7,28 +7,61 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 
+/**
+ * Interface for tooltip content props
+ */
 interface TooltipContentProps {
+  /** Activity data to display */
   data: PositionLoggerType;
+  /** Whether the node has a description */
   hasDescription: boolean;
+  /** Whether the node has approval criteria */
   hasApprovalCriteria: boolean;
+  /** Whether the node has assigned users */
   hasAssignedUsers: boolean;
+  /** Whether the node has inputs */
   hasInputs: boolean;
+  /** Whether the node has outputs */
   hasOutputs: boolean;
+  /** Whether the node has a deadline */
   hasDeadline: boolean;
 }
 
+/**
+ * Interface for the node data structure
+ */
 interface PositionLoggerType {
+  /** Name of the activity */
   label: string;
+  /** Optional description of the activity */
   description?: string;
+  /** Optional array of input dependencies */
   inputs?: string[];
+  /** Optional array of output connections */
   outputs?: string[];
+  /** Optional array of users assigned to this activity */
   assignedUsers?: string[];
+  /** Optional background color for the node */
   color?: string;
+  /** Optional deadline date string */
   deadline?: string;
+  /** Optional criteria for approval */
   approvalCriteria?: string;
+  /** Optional priority level */
   priority?: string;
 }
 
+/**
+ * Component for displaying detailed activity information in a tooltip
+ * @param data Activity data to display
+ * @param hasDescription Whether the node has a description
+ * @param hasApprovalCriteria Whether the node has approval criteria
+ * @param hasAssignedUsers Whether the node has assigned users
+ * @param hasInputs Whether the node has inputs
+ * @param hasOutputs Whether the node has outputs
+ * @param hasDeadline Whether the node has a deadline
+ * @returns React component for tooltip content
+ */
 export const ToolTipContent = ({
   data,
   hasDescription,
@@ -38,6 +71,10 @@ export const ToolTipContent = ({
   hasOutputs,
   hasDeadline,
 }: TooltipContentProps) => {
+  /**
+   * Determines the status of the deadline
+   * @returns 'passed', 'approaching', 'normal', or null if no deadline
+   */
   const getDeadlineStatus = () => {
     if (!data.deadline) {
       return null;
@@ -59,6 +96,11 @@ export const ToolTipContent = ({
 
   const deadlineStatus = getDeadlineStatus();
 
+  /**
+   * Formats a date string into a readable format
+   * @param dateString Optional date string to format
+   * @returns Formatted date string or empty string if no date
+   */
   const formatDeadlineDate = (dateString?: string) => {
     if (!dateString) {
       return '';
@@ -113,6 +155,7 @@ export const ToolTipContent = ({
         </div>
       )}
 
+      {/* Remaining JSX remains unchanged */}
       {hasAssignedUsers && (
         <div className="tooltip-section" style={{ marginBottom: '16px' }}>
           <div

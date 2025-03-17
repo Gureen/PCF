@@ -5,13 +5,29 @@ import './styles.css';
 
 const { Text, Title } = Typography;
 
+/**
+ * Props for the ClearAllModal component
+ */
 interface ClearAllModalProps {
+  /** Whether the modal is currently visible */
   isModalOpen: boolean;
+  /** Function to set the modal's visibility state */
   setIsModalOpen: (value: boolean) => void;
+  /** Optional callback function called when confirmation is clicked */
   onConfirm?: () => void;
+  /** Type of modal action: 'clear' for removing all activities or 'new' for creating a new flow */
   modalAction?: 'clear' | 'new';
 }
 
+/**
+ * A confirmation modal component used for potentially destructive actions
+ * Displays different content based on the modalAction prop ('clear' or 'new')
+ * @param isModalOpen Whether the modal is currently visible
+ * @param setIsModalOpen Function to set the modal's visibility state
+ * @param onConfirm Optional callback function called when confirmation is clicked
+ * @param modalAction Type of modal action: 'clear' for removing all activities or 'new' for creating a new flow
+ * @returns A modal component with appropriate warning messages and styling
+ */
 export const ClearAllModal = ({
   isModalOpen,
   setIsModalOpen,
@@ -20,6 +36,10 @@ export const ClearAllModal = ({
 }: ClearAllModalProps) => {
   const { clearActivities } = useProcessFlow();
 
+  /**
+   * Handles the confirmation action when user clicks 'Yes'
+   * Either calls the provided onConfirm callback or clears activities directly
+   */
   const handleOk = () => {
     if (onConfirm) {
       onConfirm();
@@ -29,6 +49,9 @@ export const ClearAllModal = ({
     }
   };
 
+  /**
+   * Handles the cancel action when user clicks 'No'
+   */
   const handleCancel = () => {
     setIsModalOpen(false);
   };

@@ -5,6 +5,12 @@ import type { PositionLoggerNodeData } from './types';
 import './styles.css';
 import { ToolTipContent } from './ToolTipContent';
 
+/**
+ * Node component for displaying activities in the process flow
+ * @param data Node data containing activity information
+ * @param selected Boolean indicating if the node is currently selected
+ * @returns React component for a position-aware activity node
+ */
 export function PositionLoggerNode({
   data,
   selected,
@@ -18,12 +24,10 @@ export function PositionLoggerNode({
   const hasDeadline = Boolean(data.deadline);
   const hasApprovalCriteria = Boolean(data.approvalCriteria);
 
-  // Very visible handle styles
   const handleStyle = {
-    boxShadow: '0 0 10px rgba(0, 0, 0, 0.8)', // Add shadow for depth
+    boxShadow: '0 0 10px rgba(0, 0, 0, 0.8)',
   };
 
-  // Position adjustments to make handles stand out from the node
   const topHandleStyle = {
     ...handleStyle,
     top: '-12px',

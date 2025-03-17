@@ -1,31 +1,59 @@
 import type { SavedFlow } from '@/interfaces';
 import type { Dayjs } from 'dayjs';
 
+/**
+ * Activity type definition for flow items
+ * Represents a single activity node in a process flow
+ */
 export type Activity = {
+  /** Unique identifier for the activity */
   id: string;
+  /** Name of the activity */
   activityName?: string;
+  /** Description of what the activity entails */
   description?: string;
+  /** Array of input dependencies from other activities */
   inputs?: string[];
+  /** Array of outputs to other activities */
   outputs?: string[];
+  /** Background color for the activity node */
   color?: string;
+  /** Array of users assigned to this activity */
   assignedUsers?: string[];
+  /** Whether the activity is empty (for placeholders) */
   isEmpty?: boolean;
+  /** Position coordinates for the activity in the flow diagram */
   position?: {
     x: number;
     y: number;
   };
+  /** Deadline for completing the activity */
   deadline?: Dayjs | string;
+  /** Criteria for activity approval */
   approvalCriteria?: string;
 };
 
+/**
+ * Type definition for a saved flow
+ * Represents a complete process flow with metadata and activities
+ */
 export type SavedFlowType = {
+  /** Unique identifier for the flow */
   id: string;
+  /** Name of the project flow */
   projectName: string;
+  /** Date when the flow was created */
   createdAt: string;
+  /** Date when the flow was last modified */
   lastModified: string;
+  /** Array of activities that make up the flow */
   activities: Activity[];
 };
 
+/**
+ * Pre-defined process flows for demo and templates
+ * These flows demonstrate various workflow patterns and can be loaded by users
+ */
 export const preloadedFlows: SavedFlow[] = [
   {
     id: '4e2d8c1a-6f57-49b3-ae85-7c9f2b3d1a0e',

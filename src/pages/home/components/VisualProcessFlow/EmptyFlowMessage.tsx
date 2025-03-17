@@ -8,6 +8,11 @@ import { Space, Typography } from 'antd';
 
 const { Title, Text } = Typography;
 
+/**
+ * Component to display when the process flow is empty
+ * Shows informative text with icons about possible actions
+ * @returns React component for empty flow state
+ */
 export const EmptyFlowMessage = () => {
   return (
     <div className="empty-flow-message">

@@ -4,6 +4,11 @@ import { USER_OPTIONS } from './constants';
 import type { FormValues } from './types';
 import { activityNameValidation } from './validation';
 
+/**
+ * Component that renders the top section of the activity form
+ * Contains activity name, assigned users, and deadline inputs
+ * @returns React component with form items for the top section
+ */
 export const ActivityTopSection = () => {
   return (
     <Row gutter={[16, 8]}>

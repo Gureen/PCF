@@ -1,5 +1,10 @@
 import type { Activity } from '@/interfaces';
 
+/**
+ * Predefined activity templates for common workflow steps
+ * These templates can be dragged onto the flow canvas to create new activities
+ * Each template has a unique ID, name, and color
+ */
 export const activityTemplates: Activity[] = [
   {
     id: '8f7e6d5c-4b3a-2d1e-0f9g-8h7i6j5k4l3m',

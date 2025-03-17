@@ -1,9 +1,16 @@
+/**
+ * CSS styles for action buttons component
+ */
+
+/** Container for action buttons with right alignment and spacing */
 .action-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-  }
-  .button-style{
-    font-size: 18px;
-  }
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/** Icon styling within action buttons */
+.button-style {
+  font-size: 18px;
+}

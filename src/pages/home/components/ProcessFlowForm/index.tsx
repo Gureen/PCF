@@ -1,4 +1,4 @@
-import { DEFAULT_COLOR } from '@/constants/text';
+import { DEFAULT_COLOR } from '@/constants';
 import { useProcessFlow } from '@/context/hooks';
 import { enLanguage } from '@/language/english';
 import {
@@ -26,10 +26,21 @@ import type { FormValues } from './types';
 import { createActivityObject } from './utils';
 
 const { Title } = Typography;
+
+/**
+ * Props for the ProcessFlowForm component
+ */
 interface ProcessFlowFormProps {
+  /** Form instance for controlling the form */
   form: FormInstance<FormValues>;
 }
 
+/**
+ * Main form component for creating and editing process flow activities
+ * Handles form submission, validation, and interaction with the process flow context
+ * @param form Ant Design form instance
+ * @returns React component for the process flow form
+ */
 export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
   const {
     addActivity,
@@ -46,6 +57,10 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
   const buttonSubmitIcon = isEditing ? <SaveOutlined /> : <PlusOutlined />;
   const buttonSubmitColor = isEditing ? 'green' : 'blue';
 
+  /**
+   * Resets the form fields, optionally setting default values
+   * @param withDefaults Whether to set default values after reset
+   */
   const resetForm = (withDefaults = true) => {
     form.resetFields();
     if (withDefaults) {
@@ -56,6 +71,10 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
     }
   };
 
+  /**
+   * Handles form submission
+   * @param values Form values submitted
+   */
   const onFinish = (values: FormValues) => {
     const trimmedValues = {
       ...values,
@@ -83,11 +102,17 @@ export const ProcessFlowForm = ({ form }: ProcessFlowFormProps) => {
     }
   };
 
+  /**
+   * Cancels the editing process and resets the form
+   */
   const handleCancelEditing = () => {
     resetForm(false);
     cancelEditing();
   };
 
+  /**
+   * Initializes the form with current values when editing, or default values when creating
+   */
   const initializeForm = () => {
     if (isEditing && currentActivity) {
       form.setFieldsValue({

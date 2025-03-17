@@ -25,7 +25,7 @@ export const applyActivityDefaults = (activity: Activity): Activity => {
 export const addIdToActivity = (activity: Activity): Activity => {
   const activityWithId = {
     ...activity,
-    id: activity.id || Date.now().toString(),
+    id: activity.id || crypto.randomUUID(),
   };
 
   return activityWithId;

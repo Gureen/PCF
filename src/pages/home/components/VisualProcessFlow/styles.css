@@ -1,14 +1,20 @@
-/* Node component styles */
+/**
+ * CSS Styles for Process Flow Components
+ */
+
+/* Container for the flow diagram with fixed height and border */
 .flow-container {
   height: 70vh;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
 
+/* Wrapper for the entire process flow visualization */
 .visual-process-flow-container {
   margin-top: 20px;
 }
 
+/* Styling for the empty state message shown when no nodes exist */
 .empty-flow-message {
   display: flex;
   height: 100%;
@@ -19,7 +25,7 @@
   background-color: #fff;
 }
 
-/* Remove the white background from handles */
+/* Remove default React Flow handle styling to allow custom styling */
 .react-flow__handle {
   width: 8px !important;
   height: 8px !important;
@@ -29,11 +35,12 @@
   border: none !important;
 }
 
-/* Custom styling for the handles to match the node color */
+/* Custom styling for the top and bottom connection handles */
 .react-flow__handle-top, .react-flow__handle-bottom {
   background-color: transparent !important;
 }
 
+/* Main styling for activity nodes in the flow */
 .activity-node {
   padding: 12px;
   border-radius: 5px;
@@ -43,10 +50,12 @@
   position: relative;
 }
 
+/* Highlight styling for selected nodes */
 .react-flow__node.selected .activity-node {
   border-color: #1677ff;
 }
 
+/* Styling for the node's label text */
 .node-label {
   color: white;
   font-weight: 600;
@@ -55,10 +64,12 @@
   padding: 8px;
 }
 
+/* Remove border from connection handles */
 .node-handle {
   border: none;
 }
 
+/* Alternative styling for empty flow message with dashed border */
 .empty-flow-message {
   display: flex;
   justify-content: center;
@@ -69,23 +80,20 @@
   border: 2px dashed #d9d9d9;
 }
 
-/* Target React Flow's node element to remove any background */
+/* Remove background from React Flow node containers */
 .react-flow__node {
   background-color: transparent !important;
   padding: 0 !important;
   border: none !important;
 }
 
-/* Make sure tooltip doesn't get cut off */
+/* Ensure tooltips appear above other elements */
 .ant-tooltip {
   z-index: 1000;
 }
 
-/* Custom tooltip style */
+/* Custom styling for Ant Design tooltips */
 .ant-tooltip-inner {
   padding: 0 !important;
   border-radius: 8px !important;
 }
-
-
-

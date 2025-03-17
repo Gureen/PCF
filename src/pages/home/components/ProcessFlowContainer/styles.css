@@ -1,26 +1,35 @@
-/* Import Modal Styles */
+/**
+ * CSS styles for process flow components
+ */
+
+/** Import Modal content container */
 .modal-content {
   width: 100%;
 }
 
+/** File icon styling in the import modal */
 .file-icon {
   font-size: 24px;
   color: #1677ff;
 }
 
+/** File title styling in the import modal */
 .file-title {
   font-size: 16px;
 }
 
+/** Container for tags in the import modal */
 .tag-container {
   margin-top: 4px;
 }
 
+/** Date information styling in the import modal */
 .date-info {
   font-size: 12px;
   margin-left: 8px;
 }
 
+/** Modern table header styling */
 .modern-table .ant-table-thead > tr > th {
   background-color: #f7f9fc;
   color: #516091;
@@ -29,15 +38,18 @@
   border-bottom: 1px solid #e6ebf5;
 }
 
+/** Empty state container for import modal */
 .empty-state {
   width: 100%;
   padding: 24px 0;
 }
 
+/** Full width container styling */
 .full-width {
   width: 100%;
 }
 
+/** Controls container for the table search and buttons */
 .table-controls {
   display: flex;
   justify-content: space-between;
@@ -47,50 +59,61 @@
   gap: 8px;
 }
 
+/** Import button styling */
 .import-button {
   background-color: #1677ff;
   border-color: #1677ff;
 }
 
+/** Import button hover state */
 .import-button:hover {
   background-color: #4096ff;
   border-color: #4096ff;
 }
 
+/** Process flow table container */
 .process-flow-table {
   width: 100%;
 }
 
+/** Process flow divider styling */
 .process-flow-divider {
   margin: 24px 0 16px;
 }
 
+/** Info icon styling */
 .info-icon {
   color: #1890ff;
   margin-left: 8px;
   cursor: pointer;
 }
 
+/** Modal content container */
 .modal-content {
   width: 100%;
 }
 
+/** Flow name styling in modals */
 .flow-name {
   margin: 0 4px;
 }
 
+/** Warning alert styling in modals */
 .warning-alert {
   margin-bottom: 12px;
 }
 
+/** Primary icon color */
 .icon-primary {
   color: #1677ff;
 }
 
+/** Danger icon color */
 .icon-danger {
   color: #ff4d4f;
 }
 
+/** Neutral icon color */
 .icon-neutral {
   color: #8c8c8c;
 }

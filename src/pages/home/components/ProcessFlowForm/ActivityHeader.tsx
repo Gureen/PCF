@@ -4,6 +4,11 @@ import { Tooltip, Typography } from 'antd';
 
 const { Title } = Typography;
 
+/**
+ * Header component for the activity section of the form
+ * Displays a title with an information tooltip
+ * @returns React component for the activity section header
+ */
 export const ActivityHeader = () => {
   return (
     <div className="title-with-icon">

@@ -1,9 +1,15 @@
+/**
+ * CSS styles for activity templates components
+ */
+
+/** Styling for the information icon next to section headers */
 .info-icon {
   margin-left: 8px;
   font-size: 16px;
   color: #1677ff;
 }
 
+/** Styling for template card titles with text overflow handling */
 .title {
   margin: 0;
   white-space: nowrap;
@@ -11,6 +17,7 @@
   text-overflow: ellipsis;
 }
 
+/** Container for the template cards with flexbox layout */
 .template-container {
   display: flex;
   flex-wrap: wrap;
@@ -18,17 +25,20 @@
   margin-top: 12px;
 }
 
+/** Alternative styling for the information icon */
 .icon{
   margin-left: 8px;
   font-size: 16px;
   color: #1677ff;
 }
 
+/** Basic template card with fixed minimum width */
 .template-card {
   height: 100%;
   min-width: 190px;
 }
 
+/** Template card with colored borders for visual distinction */
 .template-card-dynamic {
   border-left: 4px solid;
   border-bottom: 4px solid;

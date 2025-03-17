@@ -8,6 +8,11 @@ import {
 
 const { TextArea } = Input;
 
+/**
+ * Component that renders the bottom section of the activity form
+ * Contains approval criteria, description, and color picker inputs
+ * @returns React component with form items for the bottom section
+ */
 export const ActivityBottomSection = () => {
   return (
     <Row gutter={[16, 8]}>

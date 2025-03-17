@@ -21,17 +21,41 @@ import {
 } from 'antd';
 import { createFileUploadProps } from './utils';
 
+/**
+ * Props for the ProcessFlowTable component
+ */
 interface ProcessFlowTableProps {
+  /** Array of flow data to display in the table */
   data: SavedFlow[];
+  /** Configuration for table pagination */
   paginationConfig: TablePaginationConfig;
+  /** Function to handle loading a flow */
   onLoad: (id: string) => void;
+  /** Function to handle exporting a flow */
   onExport: (record: SavedFlow) => void;
+  /** Function to handle deleting a flow */
   onDelete: (record: SavedFlow) => void;
+  /** Function to handle search input changes */
   onSearchChange: (value: string) => void;
+  /** Function to set the imported flow data */
   setImportedFlow: (flow: SavedFlow | null) => void;
+  /** Function to control the import modal visibility */
   setIsImportModalOpen: (isOpen: boolean) => void;
 }
 
+/**
+ * Table component for displaying and managing process flows
+ * Provides search, import, and per-flow actions (load, export, delete)
+ * @param data Array of flow data to display in the table
+ * @param paginationConfig Configuration for table pagination
+ * @param onLoad Function to handle loading a flow
+ * @param onExport Function to handle exporting a flow
+ * @param onDelete Function to handle deleting a flow
+ * @param onSearchChange Function to handle search input changes
+ * @param setImportedFlow Function to set the imported flow data
+ * @param setIsImportModalOpen Function to control the import modal visibility
+ * @returns React component for the process flow table
+ */
 export const ProcessFlowTable = ({
   data,
   paginationConfig,
@@ -42,6 +66,10 @@ export const ProcessFlowTable = ({
   setImportedFlow,
   setIsImportModalOpen,
 }: ProcessFlowTableProps) => {
+  /**
+   * Create upload props for the import button
+   * Configures file validation and handling
+   */
   const uploadProps = createFileUploadProps(
     setImportedFlow,
     setIsImportModalOpen,
