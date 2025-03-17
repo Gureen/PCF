@@ -592,8 +592,15 @@ export const VisualProcessFlow = () => {
             onReconnectEnd={onReconnectEnd}
             fitView
           >
-            <Background bgColor="white" />
-            <MiniMap />
+            <Background bgColor="white" size={4} color="#f0f0f0" />
+            <MiniMap
+              nodeStrokeColor={(n: Node) => (n.selected ? '#1677ff' : '#555')}
+              nodeColor={(n: Node): string => {
+                // Always return a string to satisfy TypeScript
+                return n.data?.color ? String(n.data.color) : '#eee';
+              }}
+              nodeBorderRadius={2}
+            />
             <Controls />
 
             <Panel position="top-right" className="control-panel">

@@ -1,5 +1,5 @@
 import type { Activity } from '@/interfaces';
-import type { Edge } from '@xyflow/react';
+import { type Edge, MarkerType } from '@xyflow/react';
 
 // Main function to generate edges
 export const generateEdgesFromActivities = (
@@ -27,12 +27,25 @@ export const generateEdgesFromActivities = (
 
       const edgeId = `e-${sourceActivity.id}-${targetActivity.id}`;
 
-      // Only add if this edge ID doesn't already exist
       if (!edgeIdSet.has(edgeId)) {
         edges.push({
           id: edgeId,
           source: sourceActivity.id,
           target: targetActivity.id,
+          type: 'smoothstep',
+          animated: true,
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+            color: '#333333',
+            width: 15,
+            height: 20,
+            strokeWidth: 1,
+          },
+          style: {
+            strokeDasharray: '5, 5',
+            strokeWidth: 1.5,
+            stroke: '#333333',
+          },
         });
         edgeIdSet.add(edgeId);
       }

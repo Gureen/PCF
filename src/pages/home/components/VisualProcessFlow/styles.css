@@ -1,3 +1,4 @@
+/* Node component styles */
 .flow-container {
   height: 70vh;
   border: 1px solid #ddd;
@@ -18,25 +19,45 @@
   background-color: #fff;
 }
 
+/* Remove the white background from handles */
 .react-flow__handle {
-  background-color: #fff;
-  border: 2px solid #1677ff;
+  width: 8px !important;
+  height: 8px !important;
+  min-width: 8px !important;
+  min-height: 8px !important;
+  background-color: transparent !important;
+  border: none !important;
 }
 
+/* Custom styling for the handles to match the node color */
+.react-flow__handle-top, .react-flow__handle-bottom {
+  background-color: transparent !important;
+}
 
 .activity-node {
   padding: 12px;
   border-radius: 5px;
   min-width: 180px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  background-color: white;
   border: 2px solid transparent;
+  position: relative;
 }
 
 .react-flow__node.selected .activity-node {
   border-color: #1677ff;
 }
 
+.node-label {
+  color: white;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+}
+
+.node-handle {
+  border: none;
+}
 
 .empty-flow-message {
   display: flex;
@@ -47,3 +68,24 @@
   background-color: #fafafa;
   border: 2px dashed #d9d9d9;
 }
+
+/* Target React Flow's node element to remove any background */
+.react-flow__node {
+  background-color: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
+/* Make sure tooltip doesn't get cut off */
+.ant-tooltip {
+  z-index: 1000;
+}
+
+/* Custom tooltip style */
+.ant-tooltip-inner {
+  padding: 0 !important;
+  border-radius: 8px !important;
+}
+
+
+
