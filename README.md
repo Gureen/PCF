@@ -41,12 +41,12 @@ This powerful tool enables businesses to:
 
 2. **Install dependencies**
    ```bash
-   pnpm install
+   yarn install
    ```
 
 3. **Start development server**
    ```bash
-   pnpm dev
+   yarn dev
    ```
    The application will be available at `http://localhost:5173`
 

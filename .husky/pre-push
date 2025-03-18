@@ -1,1 +1,1 @@
-pnpm check:turbo
+yarn check:turbo

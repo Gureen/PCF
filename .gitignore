@@ -6,7 +6,6 @@ dist-ssr
 *.local
 
 yarn-error.log*
-.pnpm-debug.log*
 
 # TS
 *.tsbuildinfo

@@ -4,23 +4,15 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=23.x.x",
-    "pnpm": ">=9"
+    "node": ">=23.x.x"
   },
-  "packageManager": "pnpm@9.13.2",
   "scripts": {
     "dev": "react-router dev",
-    "build": "pnpm typegen && react-router build",
     "serve": "vite preview",
     "biome:check": "biome check",
-    "biome:fix": "pnpm biome:check --write",
     "biome:ci": "biome ci",
     "typegen": "react-router typegen",
     "type:check": "react-router typegen && tsc",
-    "turbo": "pnpm dlx turbo@2.1.2",
-    "check:turbo": "pnpm turbo biome:check type:check test",
-    "up-interactive": "pnpm up -i",
-    "up-latest": "pnpm up-interactive -L",
     "release": "cross-env HUSKY=0 commit-and-tag-version",
     "push-release": "git push --follow-tags origin main",
     "prepare": "husky",
@@ -43,10 +35,10 @@
     "dayjs": "^1.11.13",
     "isbot": "^5",
     "lucide-react": "^0.477.0",
-    "pnpm": "^10.5.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router": "^7.2.0"
+    "react-router": "^7.2.0",
+    "yarn": "^1.22.17"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
