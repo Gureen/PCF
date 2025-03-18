@@ -36,13 +36,14 @@ This powerful tool enables businesses to:
 1. **Clone the repository**
    ```bash
    git clone https://github.com/Gureen/PCF.git
-   cd PFC
    ```
 
 2. **Install dependencies**
    ```bash
-   yarn install
+   yarn install 
    ```
+   https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable
+   if you do not have Yarn install it using npm
 
 3. **Start development server**
    ```bash
