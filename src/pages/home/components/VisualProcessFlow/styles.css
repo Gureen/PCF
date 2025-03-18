@@ -25,16 +25,6 @@
   background-color: #fff;
 }
 
-/* Remove default React Flow handle styling to allow custom styling */
-.react-flow__handle {
-  width: 8px !important;
-  height: 8px !important;
-  min-width: 8px !important;
-  min-height: 8px !important;
-  background-color: transparent !important;
-  border: none !important;
-}
-
 /* Custom styling for the top and bottom connection handles */
 .react-flow__handle-top, .react-flow__handle-bottom {
   background-color: transparent !important;
@@ -64,11 +54,6 @@
   padding: 8px;
 }
 
-/* Remove border from connection handles */
-.node-handle {
-  border: none;
-}
-
 /* Alternative styling for empty flow message with dashed border */
 .empty-flow-message {
   display: flex;
@@ -85,15 +70,4 @@
   background-color: transparent !important;
   padding: 0 !important;
   border: none !important;
-}
-
-/* Ensure tooltips appear above other elements */
-.ant-tooltip {
-  z-index: 1000;
-}
-
-/* Custom styling for Ant Design tooltips */
-.ant-tooltip-inner {
-  padding: 0 !important;
-  border-radius: 8px !important;
 }
