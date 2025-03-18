@@ -35,7 +35,7 @@ This powerful tool enables businesses to:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-organization/process-flow-configurator.git
+   git clone https://github.com/Gureen/PCF.git
    cd process-flow-configurator
    ```
 
@@ -46,7 +46,7 @@ This powerful tool enables businesses to:
 
 3. **Start development server**
    ```bash
-   pnpm run dev
+   pnpm dev
    ```
    The application will be available at `http://localhost:5173`
 
